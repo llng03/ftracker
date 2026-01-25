@@ -2,13 +2,12 @@ package de.ftracker.services.pots;
 
 import de.ftracker.model.pots.BudgetPot;
 import de.ftracker.model.pots.PotForRegularExp;
-import de.ftracker.model.pots.PotSummary;
+import de.ftracker.model.pots.UndistributedPotAmount;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -19,13 +18,13 @@ public class PotManager {
     private final PotRepository potRepository;
     private final PotSummaryRepository potSummaryRepository;
 
-    private PotSummary potSummary;
+    private UndistributedPotAmount potSummary;
 
     public PotManager(PotRepository potRepository, PotSummaryRepository potSummaryRepository){
         this.potRepository = potRepository;
         this.potSummaryRepository = potSummaryRepository;
         this.potSummary = potSummaryRepository.findById(1L)
-                .orElseGet(() -> potSummaryRepository.save(new PotSummary()));
+                .orElseGet(() -> potSummaryRepository.save(new UndistributedPotAmount()));
     }
 
     public List<BudgetPot> getPots() {

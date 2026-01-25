@@ -16,16 +16,16 @@ public class CostTablesTest {
     @DisplayName("table increases size")
     void test1() {
         CostTables tables = new CostTables();
-        tables.addCostToAusgaben(new Cost("Test", new BigDecimal("100"), false));
-        assertEquals(1, tables.getAusgaben().size());
+        tables.addCostToExpenses(new Cost("Test", new BigDecimal("100"), false));
+        assertEquals(1, tables.getExpenses().size());
     }
 
     @Test
     @DisplayName("returns correct sum")
     void test2() {
         CostTables tables = new CostTables();
-        tables.addCostToAusgaben(new Cost("Test", new BigDecimal("10.32"), false));
-        tables.addCostToAusgaben(new Cost("Test", new BigDecimal("20.27"), false));
+        tables.addCostToExpenses(new Cost("Test", new BigDecimal("10.32"), false));
+        tables.addCostToExpenses(new Cost("Test", new BigDecimal("20.27"), false));
         assertThat(tables.sumAusgaben()).isEqualByComparingTo(new BigDecimal("30.59"));
     }
 }

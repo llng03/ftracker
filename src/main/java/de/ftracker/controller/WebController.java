@@ -5,7 +5,6 @@ import de.ftracker.model.CostTables;
 import de.ftracker.model.costDTOs.*;
 import de.ftracker.model.pots.PotForRegularExp;
 import de.ftracker.services.pots.PotManager;
-import de.ftracker.utils.IntervalCount;
 import de.ftracker.utils.MonthData;
 import de.ftracker.utils.MonthNavigation;
 import de.ftracker.utils.MonthlySums;
@@ -45,31 +44,31 @@ public class WebController {
     }
 
     @PostMapping("/{currYear}/{currMonth}/einnahme")
-    public String einnahmeAbschicken(Model model, @ModelAttribute @Valid Cost einnahme, BindingResult bindingResult,
-                                     @PathVariable int currYear, @PathVariable int currMonth) {
+    public String postIncome(Model model, @ModelAttribute @Valid Cost income, BindingResult bindingResult,
+                             @PathVariable int currYear, @PathVariable int currMonth) {
         if(bindingResult.hasErrors()){
-            model.addAttribute("einnahme", einnahme);
+            model.addAttribute("einnahme", income);
 
             prepareModel(model, YearMonth.of(currYear, currMonth));
             return "index";
         }
 
-        costManager.addIncome(currYear, currMonth, einnahme);
+        costManager.addIncome(currYear, currMonth, income);
         return "redirect:/" + currYear + "/" + currMonth;
     }
 
     @PostMapping("/{currYear}/{currMonth}/ausgabe")
-    public String ausgabeAbschicken(Model model, @ModelAttribute @Valid Cost ausgabe, BindingResult bindingResult,  @PathVariable int currYear, @PathVariable int currMonth) {
+    public String postExpense(Model model, @ModelAttribute @Valid Cost expense, BindingResult bindingResult, @PathVariable int currYear, @PathVariable int currMonth) {
         if(bindingResult.hasErrors()){
-            model.addAttribute("ausgabe", ausgabe);
+            model.addAttribute("ausgabe", expense);
             prepareModel(model, YearMonth.of(currYear, currMonth));
             return "index";
         }
 
 
         CostTables costTables = costManager.getTablesOf(YearMonth.of(currYear, currMonth));
-        costManager.addExp(currYear, currMonth, ausgabe);
-        model.addAttribute("ausgaben", costTables.getAusgaben());
+        costManager.addExp(currYear, currMonth, expense);
+        model.addAttribute("ausgaben", costTables.getExpenses());
         return "redirect:/" + currYear + "/" + currMonth;
     }
 
@@ -120,7 +119,7 @@ public class WebController {
 
     @PostMapping("/{currYear}/{currMonth}/deleteFixedAusgabe")
     public String deleteFixedAusgabe(Model model, @RequestParam String descr, @RequestParam YearMonth start, @PathVariable int currYear, @PathVariable int currMonth) {
-        costManager.deleteFromFesteAusgaben(descr, start);
+        costManager.deleteFromFixedExp(descr, start);
         return "redirect:/" + currYear + "/" + currMonth;
     }
 

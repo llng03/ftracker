@@ -37,8 +37,8 @@ public class FixedCost extends Cost{
         this.endYear = null;
     }
 
-    public FixedCost(String name, BigDecimal betrag, boolean isIncome, Interval frequency, YearMonth start, YearMonth end) {
-        super(name, betrag, isIncome);
+    public FixedCost(String name, BigDecimal amount, boolean isIncome, Interval frequency, YearMonth start, YearMonth end) {
+        super(name, amount, isIncome);
         this.frequency = frequency;
         this.startMonth = start.getMonthValue();
         this.startYear = start.getYear();
@@ -84,6 +84,7 @@ public class FixedCost extends Cost{
     }
 
 
-
-
+    public void setIsIncome(boolean isIncome) {
+        super.setIncome(isIncome);
+    }
 }

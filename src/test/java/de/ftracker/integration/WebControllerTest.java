@@ -13,20 +13,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.time.Month;
 import java.time.YearMonth;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.beans.HasPropertyWithValue.hasProperty;
@@ -56,8 +49,8 @@ public class WebControllerTest {
 
         // Stub für alle Tests
         when(costManager.getTablesOf(any())).thenReturn(fakeTables);
-        when(costManager.getMonthsEinnahmen(any())).thenReturn(Collections.emptyList());
-        when(costManager.getMonthsAusgaben(any())).thenReturn(Collections.emptyList());
+        when(costManager.getMonthsIncome(any())).thenReturn(Collections.emptyList());
+        when(costManager.getMonthsExp(any())).thenReturn(Collections.emptyList());
         when(costManager.getFixedIncome()).thenReturn(Collections.emptyList());
         when(costManager.getFixedExp()).thenReturn(Collections.emptyList());
 

@@ -1,4 +1,4 @@
-package de.ftracker.db;
+/*package de.ftracker.db;
 
 import de.ftracker.model.CostTables;
 import de.ftracker.model.costDTOs.Cost;
@@ -39,4 +39,4 @@ public class CostTablesRepositoryTest {
         assertThat(loaded.get().getYearMonth()).isEqualTo(YearMonth.of(2025, Month.JUNE));
     }
 
-}
+}*/

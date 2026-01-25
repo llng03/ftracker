@@ -1,7 +1,7 @@
 package de.ftracker.unit;
 
 import de.ftracker.model.pots.BudgetPot;
-import de.ftracker.model.pots.PotSummary;
+import de.ftracker.model.pots.UndistributedPotAmount;
 import de.ftracker.services.pots.PotManager;
 import de.ftracker.services.pots.PotRepository;
 import de.ftracker.services.pots.PotSummaryRepository;
@@ -32,7 +32,7 @@ public class PotManagerTest {
     PotManager manager;
     @BeforeEach
     void setupUndistributed() {
-        PotSummary potSummary = new PotSummary();
+        UndistributedPotAmount potSummary = new UndistributedPotAmount();
         when(potSummaryRepository.findById(1L)).thenReturn(Optional.of(potSummary));
         manager = new PotManager(potRepository, potSummaryRepository);
     }
@@ -88,8 +88,8 @@ public class PotManagerTest {
     void test6() {
         BudgetPot pot = new BudgetPot("technik");
         when(potRepository.findByName("technik")).thenReturn(Optional.of(pot));
-        PotSummary potSummary = potSummaryRepository.findById(1L).orElse(null);
-        potSummary.setUndistributed(new BigDecimal("300"));
+        UndistributedPotAmount undistributedPotAmount = potSummaryRepository.findById(1L).orElse(null);
+        undistributedPotAmount.setUndistributed(new BigDecimal("300"));
 
         manager.distribute(new BigDecimal("100"), "technik");
         assertThat(manager.getUndistributed()).isEqualByComparingTo("200");

@@ -14,7 +14,7 @@ import static de.ftracker.model.costDTOs.Interval.MONTHLY;
 public class FixedCostForm {
     private String descr;
 
-    private BigDecimal betrag;
+    private BigDecimal amount;
 
     private boolean isIncome;
 
@@ -26,16 +26,16 @@ public class FixedCostForm {
 
     public FixedCostForm() {
         this.descr = "";
-        this.betrag = BigDecimal.ZERO;
+        this.amount = BigDecimal.ZERO;
         this.isIncome = true;
         this.frequency = Interval.MONTHLY; // oder null
         this.start = YearMonth.now();
         this.end = null;
     }
 
-    public FixedCostForm(String name, BigDecimal betrag, boolean isIncome, Interval frequency, YearMonth start, YearMonth end) {
+    public FixedCostForm(String name, BigDecimal amount, boolean isIncome, Interval frequency, YearMonth start, YearMonth end) {
         this.descr = name;
-        this.betrag = betrag;
+        this.amount = amount;
         this.isIncome = isIncome;
         this.frequency = frequency;
         this.start = start;

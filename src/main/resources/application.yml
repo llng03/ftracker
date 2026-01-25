@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/ftracker
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    username: user
+    password: geheim
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

@@ -50,33 +50,33 @@ public class CostManager {
     }
 
     public List<Cost> getIncome(YearMonth yearMonth) {
-        return getTablesOf(yearMonth).getEinnahmen();
+        return getTablesOf(yearMonth).getIncomes();
     }
 
     public List<Cost> getExp(YearMonth yearMonth) {
-        return getTablesOf(yearMonth).getAusgaben();
+        return getTablesOf(yearMonth).getExpenses();
     }
 
     public List<Cost> getAllMonthsIncome(YearMonth month) {
         List<Cost> income = getIncome(month);
-        income.addAll(getMonthsEinnahmen(month));
+        income.addAll(getMonthsIncome(month));
         return income;
     }
 
     public List<Cost> getAllMonthsExp(YearMonth month) {
         List<Cost> exp = getExp(month);
-        exp.addAll(getMonthsAusgaben(month));
+        exp.addAll(getMonthsExp(month));
         return exp;
     }
 
-    public List<Cost> getMonthsAusgaben(YearMonth month) {
+    public List<Cost> getMonthsExp(YearMonth month) {
         return getFixedExp().stream()
                 .filter(fc -> !fc.getStart().isAfter(month))
                 .filter(fc -> fc.getEnd().map(end -> !end.isBefore(month)).orElse(true))
                 .collect(Collectors.toList());
     }
 
-    public List<Cost> getMonthsEinnahmen(YearMonth month) {
+    public List<Cost> getMonthsIncome(YearMonth month) {
         return getFixedIncome().stream()
                 .filter(fc -> !fc.getStart().isAfter(month))
                 .filter(fc -> fc.getEnd().map(end -> !end.isBefore(month)).orElse(true))
@@ -84,38 +84,38 @@ public class CostManager {
     }
 
     public List<Cost> getApplicableFixedCosts(YearMonth month) {
-        List<Cost> einnahmenUndAusgabenM = getMonthsEinnahmen(month);
-        einnahmenUndAusgabenM.addAll(getMonthsAusgaben(month));
+        List<Cost> einnahmenUndAusgabenM = getMonthsIncome(month);
+        einnahmenUndAusgabenM.addAll(getMonthsExp(month));
         return einnahmenUndAusgabenM;
     }
 
     public static BigDecimal getMonthlyCost(FixedCostForm costForm) {
-        return costForm.getBetrag().divide(BigDecimal.valueOf(IntervalCount.countMonths(costForm.getFrequency())), 2, RoundingMode.HALF_UP);
+        return costForm.getAmount().divide(BigDecimal.valueOf(IntervalCount.countMonths(costForm.getFrequency())), 2, RoundingMode.HALF_UP);
     }
 
     public static BigDecimal getMonthlyCost(FixedCost ausgabe) {
-        return ausgabe.getBetrag().divide(BigDecimal.valueOf(IntervalCount.countMonths(ausgabe.getFrequency())), 2, RoundingMode.HALF_UP);
+        return ausgabe.getAmount().divide(BigDecimal.valueOf(IntervalCount.countMonths(ausgabe.getFrequency())), 2, RoundingMode.HALF_UP);
     }
 
     @Transactional
     public void addIncome(int year, int month, Cost income) {
         CostTables costTables = costTablesRepository.findByMonthAndYear(month, year)
                 .orElseThrow();
-        costTables.addCostToEinnahmen(income);
+        costTables.addCostToIncomes(income);
     }
 
     @Transactional
     public void addExp(int year, int month, Cost exp) {
         CostTables costTables = costTablesRepository.findByMonthAndYear(month, year)
                 .orElseThrow();
-        costTables.addCostToAusgaben(exp);
+        costTables.addCostToExpenses(exp);
     }
 
     @Transactional
     public void addToFixedIncome(FixedCostForm incomeForm) {
         FixedCost fixedCost = new FixedCost();
         fixedCost.setDescr(incomeForm.getDescr());
-        fixedCost.setBetrag(incomeForm.getBetrag());
+        fixedCost.setAmount(incomeForm.getAmount());
         fixedCost.setIsIncome(incomeForm.getIsIncome());
         fixedCost.setFrequency(incomeForm.getFrequency());
         fixedCost.setStart(incomeForm.getStart());
@@ -133,7 +133,7 @@ public class CostManager {
     public void addToFixedExp(FixedCostForm expForm) {
         FixedCost fixedCost = new FixedCost();
         fixedCost.setDescr(expForm.getDescr());
-        fixedCost.setBetrag(expForm.getBetrag());
+        fixedCost.setAmount(expForm.getAmount());
         fixedCost.setFrequency(expForm.getFrequency());
         fixedCost.setStart(expForm.getStart());
         fixedCost.setEnd(expForm.getEnd());
@@ -161,12 +161,12 @@ public class CostManager {
         fixedCostsRepository.deleteByDescrAndStart(income, start.getYear(), start.getMonthValue());
     }
 
-    public void deleteFromFesteAusgaben(FixedCost ausgabe) {
-        fixedCostsRepository.delete(ausgabe);
+    public void deleteFromFixedExp(FixedCost expense) {
+        fixedCostsRepository.delete(expense);
     }
 
-    public void deleteFromFesteAusgaben(String ausgabe, YearMonth start) {
-        fixedCostsRepository.deleteByDescrAndStart(ausgabe, start.getYear(), start.getMonthValue());
+    public void deleteFromFixedExp(String expense, YearMonth start) {
+        fixedCostsRepository.deleteByDescrAndStart(expense, start.getYear(), start.getMonthValue());
     }
 
     public void deleteFromIncome(Long id, int year, int month) {
@@ -174,7 +174,7 @@ public class CostManager {
                 .orElseThrow(() -> new IllegalArgumentException(
                 "No CostTable found for " + year + "-" + month
         ));
-        table.getEinnahmen().removeIf(e -> e.getId().equals(id));
+        table.getIncomes().removeIf(e -> e.getId().equals(id));
         costTablesRepository.save(table);
     }
 
@@ -183,29 +183,29 @@ public class CostManager {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "No CostTable found for " + year + "-" + month
                 ));
-        table.getAusgaben().removeIf(e -> e.getId().equals(id));
+        table.getExpenses().removeIf(e -> e.getId().equals(id));
         costTablesRepository.save(table);
     }
 
-    public BigDecimal getThisMonthsEinnahmenSum(YearMonth month) {
-        List<Cost> einnahmen = getMonthsEinnahmen(month);
-        einnahmen.addAll(getTablesOf(month).getEinnahmen());
+    public BigDecimal getThisMonthsIncomeSum(YearMonth month) {
+        List<Cost> einnahmen = getMonthsIncome(month);
+        einnahmen.addAll(getTablesOf(month).getIncomes());
         return einnahmen.stream()
-                .map(Cost::getBetrag)
+                .map(Cost::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public BigDecimal getThisMonthsAusgabenSum(YearMonth month) {
-        List<Cost> ausgaben = getMonthsAusgaben(month);
-        ausgaben.addAll(getTablesOf(month).getAusgaben());
+    public BigDecimal getThisMonthsExpSum(YearMonth month) {
+        List<Cost> ausgaben = getMonthsExp(month);
+        ausgaben.addAll(getTablesOf(month).getExpenses());
         return ausgaben.stream()
-                .map(Cost::getBetrag)
+                .map(Cost::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public MonthlySums calculateThisMonthsSums(YearMonth month) {
-        BigDecimal sumIn = getThisMonthsEinnahmenSum(month);
-        BigDecimal sumOut = getThisMonthsAusgabenSum(month);
+        BigDecimal sumIn = getThisMonthsIncomeSum(month);
+        BigDecimal sumOut = getThisMonthsExpSum(month);
         return new MonthlySums(sumIn, sumOut);
     }
 

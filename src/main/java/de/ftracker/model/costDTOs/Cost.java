@@ -3,7 +3,6 @@ package de.ftracker.model.costDTOs;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +24,7 @@ public class Cost {
     private String descr;
 
     @DecimalMin(value = "0.00", message = "Betrag darf nicht negativ sein")
-    private BigDecimal betrag;
+    private BigDecimal amount;
 
     private boolean isIncome;
 
@@ -33,18 +32,15 @@ public class Cost {
         // Default-Konstruktor für Spring Binding
     }
 
-    public Cost(String descr, BigDecimal betrag, boolean isIncome) {
+    public Cost(String descr, BigDecimal amount, boolean isIncome) {
         this.descr = descr;
-        this.betrag = betrag;
-    }
-
-    public void setIsIncome(boolean isIncome) {
+        this.amount = amount;
         this.isIncome = isIncome;
     }
 
     @Override
     public String toString() {
-        return "Cost[descr=" + descr + ", betrag=" + betrag + "]";
+        return "Cost[descr=" + descr + ", betrag=" + amount + "]";
     }
 
     public boolean getIsIncome(){
