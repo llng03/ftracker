@@ -1,8 +1,8 @@
 package de.ftracker.services.pots;
 
-import de.ftracker.model.pots.BudgetPot;
-import de.ftracker.model.pots.PotForRegularExp;
-import de.ftracker.model.pots.UndistributedPotAmount;
+import de.ftracker.model.potsDTOs.BudgetPot;
+import de.ftracker.model.potsDTOs.PotForRegularExp;
+import de.ftracker.model.potsDTOs.UndistributedPotAmount;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;

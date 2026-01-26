@@ -6,7 +6,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update   # Entwicklung; besser "validate" oder Migrationstool in Prod
+      ddl-auto: create-drop   # Entwicklung; besser "validate" oder Migrationstool in Prod
     show-sql: true
     properties:
       hibernate.format_sql: true

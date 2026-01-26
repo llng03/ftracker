@@ -1,6 +1,6 @@
 <div th:fragment="incomeAndExpenseForm">
   <div class="form-container">
-    <form method="post" th:object="${einnahme}" th:action="@{/{currYear}/{currMonth}/einnahme(currYear=${currYear}, currMonth=${currMonth})}">
+    <form method="post" th:object="${income}" th:action="@{/{currYear}/{currMonth}/income(currYear=${currYear}, currMonth=${currMonth})}">
       <h2>Einnahmen</h2>
       <div class="form-field">
         <label for="descrIn">Einnahme:</label>
@@ -10,15 +10,15 @@
 
       <div class="form-field">
         <label for="costIn">Betrag (in €):</label>
-        <input type="number" id="costIn" th:field="*{betrag}" step="0.01" min="0" placeholder="z. B. 12.50">
-        <div class="error" th:if="${#fields.hasErrors('betrag')}" th:errors="*{betrag}"></div>
+        <input type="number" id="costIn" th:field="*{amount}" step="0.01" min="0" placeholder="z. B. 12.50">
+        <div class="error" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></div>
       </div>
       <input type="hidden" th:field="*{isIncome}" value="true">
 
       <button type="submit">Hinzufügen</button>
     </form>
 
-    <form method="post" th:object="${ausgabe}" th:action="@{/{currYear}/{currMonth}/ausgabe(currYear=${currYear}, currMonth=${currMonth})}">
+    <form method="post" th:object="${expense}" th:action="@{/{currYear}/{currMonth}/expense(currYear=${currYear}, currMonth=${currMonth})}">
       <h2>Ausgaben</h2>
       <div class="form-field">
         <label for="descrOut">Ausgabe:</label>
@@ -28,8 +28,8 @@
 
       <div class="form-field">
         <label for="costOut">Kosten (in €):</label>
-        <input type="number" id="costOut" th:field="*{betrag}" step="0.01" min="0" placeholder="z. B. 12.50">
-        <div class="error" th:if="${#fields.hasErrors('betrag')}" th:errors="*{betrag}"></div>
+        <input type="number" id="costOut" th:field="*{amount}" step="0.01" min="0" placeholder="z. B. 12.50">
+        <div class="error" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></div>
       </div>
       <input type="hidden" th:field="*{isIncome}" value="false">
 

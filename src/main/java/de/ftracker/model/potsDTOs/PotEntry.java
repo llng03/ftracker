@@ -1,6 +1,7 @@
-package de.ftracker.model.pots;
+package de.ftracker.model.potsDTOs;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -12,6 +13,8 @@ public class PotEntry {
     private Long id;
 
     private LocalDate date;
+
+    @NotNull
     private BigDecimal amount;
 
     public PotEntry(){}

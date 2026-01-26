@@ -1,7 +1,7 @@
 package de.ftracker.controller;
 
-import de.ftracker.model.pots.BudgetPot;
-import de.ftracker.model.pots.PotForRegularExp;
+import de.ftracker.model.potsDTOs.BudgetPot;
+import de.ftracker.model.potsDTOs.PotForRegularExp;
 import de.ftracker.services.pots.PotManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

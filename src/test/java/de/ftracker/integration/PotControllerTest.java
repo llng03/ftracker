@@ -2,7 +2,7 @@ package de.ftracker.controller;
 
 //import de.ftracker.model.pots.BudgetPot;
 //import de.ftracker.services.pots.PotManager;
-import de.ftracker.model.pots.BudgetPot;
+import de.ftracker.model.potsDTOs.BudgetPot;
 import de.ftracker.services.pots.PotManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

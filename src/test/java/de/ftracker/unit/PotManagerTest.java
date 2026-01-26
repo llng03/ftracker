@@ -1,7 +1,7 @@
 package de.ftracker.unit;
 
-import de.ftracker.model.pots.BudgetPot;
-import de.ftracker.model.pots.UndistributedPotAmount;
+import de.ftracker.model.potsDTOs.BudgetPot;
+import de.ftracker.model.potsDTOs.UndistributedPotAmount;
 import de.ftracker.services.pots.PotManager;
 import de.ftracker.services.pots.PotRepository;
 import de.ftracker.services.pots.PotSummaryRepository;

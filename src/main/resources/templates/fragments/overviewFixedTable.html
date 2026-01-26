@@ -16,16 +16,16 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="fEinnahme: ${festeEinnahmen}">
-          <td th:text="${fEinnahme.descr}"></td>
-          <td th:text="${#numbers.formatDecimal(fEinnahme.betrag, 1, 'COMMA', 2, 'POINT')}"></td>
-          <td th:text="${fEinnahme.frequency}">monaltich</td>
-          <td th:text="${fEinnahme.start}"></td>
-          <td th:text="${fEinnahme.endValue != null ? fEinnahme.endValue : '-'}">-</td>
+        <tr th:each="fIncome: ${fixedIncomes}">
+          <td th:text="${fIncome.descr}"></td>
+          <td th:text="${#numbers.formatDecimal(fIncome.amount, 1, 'COMMA', 2, 'POINT')}"></td>
+          <td th:text="${fIncome.frequency}">monaltich</td>
+          <td th:text="${fIncome.start}"></td>
+          <td th:text="${fIncome.endValue != null ? fIncome.endValue : '-'}">-</td>
           <td>
-            <form method="post" th:action="@{/{year}/{month}/deleteFixedEinnahme(year=${currYear}, month=${currMonth})}">
-              <input type="hidden" name="descr" th:value="${fEinnahme.descr}">
-              <input type="hidden" name="start" th:value="${fEinnahme.start}">
+            <form method="post" th:action="@{/{year}/{month}/deleteFixedIncome(year=${currYear}, month=${currMonth})}">
+              <input type="hidden" name="descr" th:value="${fIncome.descr}">
+              <input type="hidden" name="start" th:value="${fIncome.start}">
               <button type="submit">-</button>
             </form>
           </td>
@@ -45,16 +45,16 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="fAusgabe: ${festeAusgaben}">
-          <td th:text="${fAusgabe.descr}"></td>
-          <td th:text="${#numbers.formatDecimal(fAusgabe.betrag, 1, 'COMMA', 2, 'POINT')}"></td>
-          <td th:text="${fAusgabe.frequency}">monaltich</td>
-          <td th:text="${fAusgabe.start}"></td>
-          <td th:text="${fAusgabe.endValue != null ? fAusgabe.endValue: '-'}">-</td>
+        <tr th:each="fExpense: ${fixedExpenses}">
+          <td th:text="${fExpense.descr}"></td>
+          <td th:text="${#numbers.formatDecimal(fExpense.amount, 1, 'COMMA', 2, 'POINT')}"></td>
+          <td th:text="${fExpense.frequency}">monaltich</td>
+          <td th:text="${fExpense.start}"></td>
+          <td th:text="${fExpense.endValue != null ? fExpense.endValue: '-'}">-</td>
           <td>
-            <form method="post" th:action="@{/{year}/{month}/deleteFixedAusgabe(year=${currYear}, month=${currMonth})}">
-              <input type="hidden" name="descr" th:value="${fAusgabe.descr}">
-              <input type="hidden" name="start" th:value="${fAusgabe.start}">
+            <form method="post" th:action="@{/{year}/{month}/deleteFixedExpense(year=${currYear}, month=${currMonth})}">
+              <input type="hidden" name="descr" th:value="${fExpense.descr}">
+              <input type="hidden" name="start" th:value="${fExpense.start}">
               <button type="submit">-</button>
             </form>
           </td>

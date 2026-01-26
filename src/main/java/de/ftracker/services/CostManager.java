@@ -84,17 +84,17 @@ public class CostManager {
     }
 
     public List<Cost> getApplicableFixedCosts(YearMonth month) {
-        List<Cost> einnahmenUndAusgabenM = getMonthsIncome(month);
-        einnahmenUndAusgabenM.addAll(getMonthsExp(month));
-        return einnahmenUndAusgabenM;
+        List<Cost> incomesAndExpensesM = getMonthsIncome(month);
+        incomesAndExpensesM.addAll(getMonthsExp(month));
+        return incomesAndExpensesM;
     }
 
     public static BigDecimal getMonthlyCost(FixedCostForm costForm) {
         return costForm.getAmount().divide(BigDecimal.valueOf(IntervalCount.countMonths(costForm.getFrequency())), 2, RoundingMode.HALF_UP);
     }
 
-    public static BigDecimal getMonthlyCost(FixedCost ausgabe) {
-        return ausgabe.getAmount().divide(BigDecimal.valueOf(IntervalCount.countMonths(ausgabe.getFrequency())), 2, RoundingMode.HALF_UP);
+    public static BigDecimal getMonthlyCost(FixedCost expense) {
+        return expense.getAmount().divide(BigDecimal.valueOf(IntervalCount.countMonths(expense.getFrequency())), 2, RoundingMode.HALF_UP);
     }
 
     @Transactional
@@ -188,17 +188,17 @@ public class CostManager {
     }
 
     public BigDecimal getThisMonthsIncomeSum(YearMonth month) {
-        List<Cost> einnahmen = getMonthsIncome(month);
-        einnahmen.addAll(getTablesOf(month).getIncomes());
-        return einnahmen.stream()
+        List<Cost> incomes = getMonthsIncome(month);
+        incomes.addAll(getTablesOf(month).getIncomes());
+        return incomes.stream()
                 .map(Cost::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public BigDecimal getThisMonthsExpSum(YearMonth month) {
-        List<Cost> ausgaben = getMonthsExp(month);
-        ausgaben.addAll(getTablesOf(month).getExpenses());
-        return ausgaben.stream()
+        List<Cost> expenses = getMonthsExp(month);
+        expenses.addAll(getTablesOf(month).getExpenses());
+        return expenses.stream()
                 .map(Cost::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }

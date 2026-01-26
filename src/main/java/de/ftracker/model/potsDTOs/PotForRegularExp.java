@@ -1,11 +1,10 @@
-package de.ftracker.model.pots;
+package de.ftracker.model.potsDTOs;
 
 import de.ftracker.model.costDTOs.Interval;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import org.hibernate.annotations.AttributeBinderType;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;

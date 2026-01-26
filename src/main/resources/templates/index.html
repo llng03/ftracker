@@ -49,9 +49,9 @@
         <div class="modal-content">
             <span class="close" onclick="closeModalPot()">&times;</span>
 
-            <form method="post" th:object="${festeAusgabe}" th:action="@{/festeAusgabe}">
+            <form method="post" th:object="${fixedExpense}" th:action="@{/fixedExpense}">
                 <label for="betrag-out">Betrag:</label>
-                <input type="number" id="betrag-to-distr" step="0.01" min="0">
+                <input type="number" id="amount-to-distr" step="0.01" min="0">
                 <button type="submit">Hinzufügen</button>
             </form>
         </div>
@@ -59,7 +59,7 @@
     -->
     <div class="diff">
         <b>Differenz: </b>
-        <span th:text="${#numbers.formatDecimal(differenz, 1, 'COMMA', 2, 'POINT')}">0.00</span>
+        <span th:text="${#numbers.formatDecimal(difference, 1, 'COMMA', 2, 'POINT')}">0.00</span>
         <span>€</span>
     </div>
 

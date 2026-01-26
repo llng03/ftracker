@@ -4,14 +4,14 @@
         <div class="modal-content">
             <span class="close" onclick="closeModalOut()">&times;</span>
 
-            <form method="post" th:object="${festeAusgabe}" th:action="@{/{currYear}/{currMonth}/festeAusgabe(currYear=${currYear}, currMonth=${currMonth})}">
+            <form method="post" th:object="${fixedExpense}" th:action="@{/{currYear}/{currMonth}/fixedExpense(currYear=${currYear}, currMonth=${currMonth})}">
                 <label for="descr-out">Ausgabe: </label>
                 <input type="text" id="descr-out" th:field="*{descr}" placeholder="z.B. Miete">
                 <div class="error" th:if="${#fields.hasErrors('descr')}" th:errors="*{descr}"></div>
 
-                <label for="betrag-out">Betrag:</label>
-                <input type="number" id="betrag-out" th:field="*{betrag}" step="0.01" min="0">
-                <div class="error" th:if="${#fields.hasErrors('betrag')}" th:errors="*{betrag}"></div>
+                <label for="amount-out">Betrag:</label>
+                <input type="number" id="amount-out" th:field="*{amount}" step="0.01" min="0">
+                <div class="error" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></div>
 
                 <input type="hidden" th:field="*{isIncome}" value="false">
 

@@ -1,6 +1,6 @@
 package de.ftracker.services.pots;
 
-import de.ftracker.model.pots.UndistributedPotAmount;
+import de.ftracker.model.potsDTOs.UndistributedPotAmount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

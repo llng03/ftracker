@@ -60,10 +60,10 @@ public class CostTables {
         this.year = yearMonth.getYear();
     }
 
-    public void setIncomes(List<Cost> einnahmen) {this.incomes = einnahmen;}
+    public void setIncomes(List<Cost> incomes) {this.incomes = incomes;}
 
-    public void setExpenses(List<Cost> ausgaben) {
-        this.expenses = ausgaben;
+    public void setExpenses(List<Cost> expenses) {
+        this.expenses = expenses;
     }
 
     public void addCostToIncomes(Cost cost){
@@ -89,11 +89,11 @@ public class CostTables {
         potManager.distribute(amount, potName);
     }
 
-    public BigDecimal sumEinnahmen() {
+    public BigDecimal sumIncomes() {
         return sum(incomes);
     }
 
-    public BigDecimal sumAusgaben() {
+    public BigDecimal sumExpenses() {
         return sum(expenses);
     }
 

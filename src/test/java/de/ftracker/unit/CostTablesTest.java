@@ -26,6 +26,6 @@ public class CostTablesTest {
         CostTables tables = new CostTables();
         tables.addCostToExpenses(new Cost("Test", new BigDecimal("10.32"), false));
         tables.addCostToExpenses(new Cost("Test", new BigDecimal("20.27"), false));
-        assertThat(tables.sumAusgaben()).isEqualByComparingTo(new BigDecimal("30.59"));
+        assertThat(tables.sumExpenses()).isEqualByComparingTo(new BigDecimal("30.59"));
     }
 }

@@ -3,7 +3,7 @@ package de.ftracker.controller;
 import de.ftracker.services.CostManager;
 import de.ftracker.model.CostTables;
 import de.ftracker.model.costDTOs.*;
-import de.ftracker.model.pots.PotForRegularExp;
+import de.ftracker.model.potsDTOs.PotForRegularExp;
 import de.ftracker.services.pots.PotManager;
 import de.ftracker.utils.MonthData;
 import de.ftracker.utils.MonthNavigation;
@@ -43,11 +43,11 @@ public class WebController {
         return "index";
     }
 
-    @PostMapping("/{currYear}/{currMonth}/einnahme")
+    @PostMapping("/{currYear}/{currMonth}/income")
     public String postIncome(Model model, @ModelAttribute @Valid Cost income, BindingResult bindingResult,
                              @PathVariable int currYear, @PathVariable int currMonth) {
         if(bindingResult.hasErrors()){
-            model.addAttribute("einnahme", income);
+            model.addAttribute("income", income);
 
             prepareModel(model, YearMonth.of(currYear, currMonth));
             return "index";
@@ -57,10 +57,10 @@ public class WebController {
         return "redirect:/" + currYear + "/" + currMonth;
     }
 
-    @PostMapping("/{currYear}/{currMonth}/ausgabe")
+    @PostMapping("/{currYear}/{currMonth}/expense")
     public String postExpense(Model model, @ModelAttribute @Valid Cost expense, BindingResult bindingResult, @PathVariable int currYear, @PathVariable int currMonth) {
         if(bindingResult.hasErrors()){
-            model.addAttribute("ausgabe", expense);
+            model.addAttribute("expense", expense);
             prepareModel(model, YearMonth.of(currYear, currMonth));
             return "index";
         }
@@ -68,14 +68,14 @@ public class WebController {
 
         CostTables costTables = costManager.getTablesOf(YearMonth.of(currYear, currMonth));
         costManager.addExp(currYear, currMonth, expense);
-        model.addAttribute("ausgaben", costTables.getExpenses());
+        model.addAttribute("expenses", costTables.getExpenses());
         return "redirect:/" + currYear + "/" + currMonth;
     }
 
-    @PostMapping("/{currYear}/{currMonth}/festeEinnahme")
+    @PostMapping("/{currYear}/{currMonth}/fixedIncome")
     public String addFixedIncome(Model model, @ModelAttribute @Valid FixedCostForm festeEinname, BindingResult bindingResult, @PathVariable int currYear, @PathVariable int currMonth) {
         if(bindingResult.hasErrors()){
-            model.addAttribute("festeEinnahme", festeEinname);
+            model.addAttribute("fixedIncome", festeEinname);
             prepareModel(model, YearMonth.of(currYear, currMonth));
             return "indexMonth";
         }
@@ -83,17 +83,17 @@ public class WebController {
         return "redirect:/" + currYear + "/" + currMonth;
     }
 
-    @PostMapping("/{currYear}/{currMonth}/festeAusgabe")
-    public String addFixedExp(Model model, @ModelAttribute @Valid FixedCostForm ausgabe, BindingResult bindingResult, @PathVariable int currYear, @PathVariable int currMonth) {
+    @PostMapping("/{currYear}/{currMonth}/fixedExpense")
+    public String addFixedExp(Model model, @ModelAttribute @Valid FixedCostForm expense, BindingResult bindingResult, @PathVariable int currYear, @PathVariable int currMonth) {
         if(bindingResult.hasErrors()){
-            model.addAttribute("festeAusgabe", ausgabe);
+            model.addAttribute("fixedExpense", expense);
             prepareModel(model, YearMonth.of(currYear, currMonth));
             return "indexMonth";
         }
-        if(ausgabe.getFrequency() != Interval.MONTHLY) {
-            potManager.addPot(new PotForRegularExp(ausgabe.getDescr(), ausgabe.getStart().minusMonths(1), ausgabe.getStart().minusMonths(1), costManager.getMonthlyCost(ausgabe), ausgabe.getFrequency()));
+        if(expense.getFrequency() != Interval.MONTHLY) {
+            potManager.addPot(new PotForRegularExp(expense.getDescr(), expense.getStart().minusMonths(1), expense.getStart().minusMonths(1), costManager.getMonthlyCost(expense), expense.getFrequency()));
         }
-        costManager.addToFixedExp(ausgabe);
+        costManager.addToFixedExp(expense);
         return "redirect:/" + currYear + "/" + currMonth;
 
     }
@@ -111,14 +111,14 @@ public class WebController {
         return "redirect:/" + currYear + "/" + currMonth;
     }
 
-    @PostMapping("/{currYear}/{currMonth}/deleteFixedEinnahme")
-    public String deleteFixedEinnahme(Model model, @RequestParam String descr, @RequestParam YearMonth start, @PathVariable int currYear, @PathVariable int currMonth) {
+    @PostMapping("/{currYear}/{currMonth}/deleteFixedIncome")
+    public String deleteFixedIncome(Model model, @RequestParam String descr, @RequestParam YearMonth start, @PathVariable int currYear, @PathVariable int currMonth) {
         costManager.deleteFromFixedIncome(descr, start);
         return "redirect:/" + currYear + "/" + currMonth;
     }
 
-    @PostMapping("/{currYear}/{currMonth}/deleteFixedAusgabe")
-    public String deleteFixedAusgabe(Model model, @RequestParam String descr, @RequestParam YearMonth start, @PathVariable int currYear, @PathVariable int currMonth) {
+    @PostMapping("/{currYear}/{currMonth}/deleteFixedExpense")
+    public String deleteFixedExpense(Model model, @RequestParam String descr, @RequestParam YearMonth start, @PathVariable int currYear, @PathVariable int currMonth) {
         costManager.deleteFromFixedExp(descr, start);
         return "redirect:/" + currYear + "/" + currMonth;
     }
@@ -161,34 +161,34 @@ public class WebController {
                 costManager.getFixedIncome(),
                 costManager.getFixedExp()
         );
-        model.addAttribute("festeEinnahmen", data.fixedIncome);
-        model.addAttribute("festeAusgaben", data.fixedExpense);
+        model.addAttribute("fixedIncomes", data.fixedIncome);
+        model.addAttribute("fixedExpenses", data.fixedExpense);
 
         // Fallbacks für leere Felder bei neuem Aufruf oder Fehler
-        if (!model.containsAttribute("einnahme"))
-            model.addAttribute("einnahme", new Cost());
-        if (!model.containsAttribute("ausgabe"))
-            model.addAttribute("ausgabe", new Cost());
-        if (!model.containsAttribute("festeEinnahme"))
-            model.addAttribute("festeEinnahme", new FixedCost());
-        if(!model.containsAttribute("festeAusgabe"))
-            model.addAttribute("festeAusgabe", new FixedCost());
+        if (!model.containsAttribute("income"))
+            model.addAttribute("income", new Cost());
+        if (!model.containsAttribute("expense"))
+            model.addAttribute("expense", new Cost());
+        if (!model.containsAttribute("fixedIncome"))
+            model.addAttribute("fixedIncome", new FixedCost());
+        if(!model.containsAttribute("fixedExpense"))
+            model.addAttribute("fixedExpense", new FixedCost());
 
         /*CostTables costTables = costManager.getTablesOf(month);
 
-        List<Cost> einnahmen = costManager.getMonthsEinnahmen(month);
-        List<Cost> ausgaben = costManager.getMonthsAusgaben(month);
+        List<Cost> incomes = costManager.getMonthsIncomes(month);
+        List<Cost> expenses = costManager.getMonthsExpenses(month);
         //hier ist Logik, die eig nicht in den Controller gehört(?)
-        einnahmen.addAll(costTables.getEinnahmen());
-        ausgaben.addAll(costTables.getAusgaben());*/
+        incomes.addAll(costTables.getIncomes());
+        expenses.addAll(costTables.getExpenses());*/
 
-        model.addAttribute("einnahmen", data.income);
-        model.addAttribute("ausgaben", data.expense);
+        model.addAttribute("incomes", data.income);
+        model.addAttribute("expenses", data.expense);
 
         // - - sums - - //
         MonthlySums monthlySums = costManager.calculateThisMonthsSums(month);
-        model.addAttribute("summeIn", monthlySums.sumIn);
-        model.addAttribute("summeOut", monthlySums.sumOut);
-        model.addAttribute("differenz", monthlySums.difference);
+        model.addAttribute("sumIn", monthlySums.sumIn);
+        model.addAttribute("sumOut", monthlySums.sumOut);
+        model.addAttribute("difference", monthlySums.difference);
     }
 }

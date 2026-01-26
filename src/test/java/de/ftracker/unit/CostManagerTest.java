@@ -36,64 +36,64 @@ public class CostManagerTest {
     @Test
     @DisplayName("getApplicableFixedCost funktioniert für aktuellen Monat")
     void test1() {
-        FixedCost fixedCost = new FixedCost("fixedEinnahme",
+        FixedCost fixedCost = new FixedCost("fixedIncome",
                 new BigDecimal("50"), true, Interval.MONTHLY, YearMonth.of(2025, Month.JULY), null);
         when(fixedCostsRepository.findAll()).thenReturn(Arrays.asList(fixedCost));
 
         List<Cost> applFixedCosts = costManager.getApplicableFixedCosts(YearMonth.of(2025, Month.JULY));
 
-        assertThat(applFixedCosts).anyMatch(fc -> fc.getDescr().equals("fixedEinnahme"));
+        assertThat(applFixedCosts).anyMatch(fc -> fc.getDescr().equals("fixedIncome"));
 
     }
     @Test
     @DisplayName("gAFC funktioniert für nächsten Monat")
     void test2() {
-        FixedCost fixedCost = new FixedCost("fixedEinnahme",
+        FixedCost fixedCost = new FixedCost("fixedIncome",
             new BigDecimal("50"), true, Interval.MONTHLY, YearMonth.of(2025, Month.JULY), null);
 
         when(fixedCostsRepository.findAll()).thenReturn(Arrays.asList(fixedCost));
 
         List<Cost> applFixedCosts = costManager.getApplicableFixedCosts(YearMonth.of(2025, AUGUST));
 
-        assertThat(applFixedCosts).anyMatch(fc -> fc.getDescr().equals("fixedEinnahme"));
+        assertThat(applFixedCosts).anyMatch(fc -> fc.getDescr().equals("fixedIncome"));
 
     }
 
     @Test
     @DisplayName("gAFC funktioniert für letzen Monat nicht")
     void test3() {
-        FixedCost fixedCost = new FixedCost("fixedEinnahme",
+        FixedCost fixedCost = new FixedCost("fixedIncome",
                 new BigDecimal("50"), true, Interval.MONTHLY, YearMonth.of(2025, Month.JULY), null);
         when(fixedCostsRepository.findAll()).thenReturn(Arrays.asList(fixedCost));
 
         List<Cost> applFixedCosts = costManager.getApplicableFixedCosts(YearMonth.of(2025, Month.JUNE));
 
-        assertThat(applFixedCosts).noneMatch(fc -> fc.getDescr().equals("fixedEinnahme"));
+        assertThat(applFixedCosts).noneMatch(fc -> fc.getDescr().equals("fixedIncome"));
 
     }
     @Test
     @DisplayName("gAFC funktioniert für nächsten Monat nicht falls unerwünscht")
     void test4() {
-        FixedCost fixedCost = new FixedCost("fixedEinnahme",
+        FixedCost fixedCost = new FixedCost("fixedIncome",
                 new BigDecimal("50"), true, Interval.MONTHLY, YearMonth.of(2025, Month.JULY), YearMonth.of(2025, AUGUST));
         when(fixedCostsRepository.findAll()).thenReturn(Arrays.asList(fixedCost));
 
         List<Cost> applFixedCosts = costManager.getApplicableFixedCosts(YearMonth.of(2025, Month.SEPTEMBER));
 
-        assertThat(applFixedCosts).noneMatch(fc -> fc.getDescr().equals("fixedEinnahme"));
+        assertThat(applFixedCosts).noneMatch(fc -> fc.getDescr().equals("fixedIncome"));
 
     }
 
     @Test
     @DisplayName("gAFC funktioniert für letzten erwünschten Monat noch")
     void test5() {
-        FixedCost fixedCost = new FixedCost("fixedEinnahme",
+        FixedCost fixedCost = new FixedCost("fixedIncome",
                 new BigDecimal("50"), true, Interval.MONTHLY, YearMonth.of(2025, Month.JULY), YearMonth.of(2025, AUGUST));
         when(fixedCostsRepository.findAll()).thenReturn(Arrays.asList(fixedCost));
 
         List<Cost> applFixedCosts = costManager.getApplicableFixedCosts(YearMonth.of(2025, AUGUST));
 
-        assertThat(applFixedCosts).anyMatch(fc -> fc.getDescr().equals("fixedEinnahme"));
+        assertThat(applFixedCosts).anyMatch(fc -> fc.getDescr().equals("fixedIncome"));
 
     }
 

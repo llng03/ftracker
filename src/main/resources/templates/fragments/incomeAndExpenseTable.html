@@ -9,12 +9,12 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="einnahme: ${einnahmen}">
-                <td th:text="${einnahme.descr}"></td>
-                <td th:text="${#numbers.formatDecimal(einnahme.betrag, 1, 'COMMA', 2, 'POINT')}"></td>
+            <tr th:each="income: ${incomes}">
+                <td th:text="${income.descr}"></td>
+                <td th:text="${#numbers.formatDecimal(income.amount, 1, 'COMMA', 2, 'POINT')}"></td>
                 <td class="delete-col hidden">
-                    <form method="post" th:if="${!einnahme.isFixedCost()}" th:action="@{/{currYear}/{currMonth}/deleteIncome(currYear=${currYear}, currMonth=${currMonth})}">
-                        <input type="hidden" name="id" th:value="${einnahme.id}">
+                    <form method="post" th:if="${!income.isFixedCost()}" th:action="@{/{currYear}/{currMonth}/deleteIncome(currYear=${currYear}, currMonth=${currMonth})}">
+                        <input type="hidden" name="id" th:value="${income.id}">
                         <button type="submit" class="delete-btn">x</button>
                     </form>
                 </td>
@@ -23,14 +23,14 @@
         </table>
         <div class="sum-in">
             <b>Summe: </b>
-            <span th:text="${#numbers.formatDecimal(summeIn, 1, 'COMMA', 2, 'POINT')}">0.00</span>
+            <span th:text="${#numbers.formatDecimal(sumIn, 1, 'COMMA', 2, 'POINT')}">0.00</span>
             <span>€ </span>
         </div>
     </div>
 
 </div>
 <div th:fragment="expenseTable">
-    <div class="ausgaben-table">
+    <div class="expenses-table">
         <table>
             <thead>
             <tr>
@@ -40,12 +40,12 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="ausgabe: ${ausgaben}">
-                <td th:text="${ausgabe.descr}"></td>
-                <td th:text="${#numbers.formatDecimal(ausgabe.betrag, 1, 'COMMA', 2, 'POINT')}"></td>
+            <tr th:each="expense: ${expenses}">
+                <td th:text="${expense.descr}"></td>
+                <td th:text="${#numbers.formatDecimal(expense.amount, 1, 'COMMA', 2, 'POINT')}"></td>
                 <td class="delete-col hidden">
-                    <form method="post" th:if="${!ausgabe.isFixedCost()}" th:action="@{/{currYear}/{currMonth}/deleteExp(currYear=${currYear}, currMonth=${currMonth})}">
-                        <input type="hidden" name="id" th:value="${ausgabe.id}">
+                    <form method="post" th:if="${!expense.isFixedCost()}" th:action="@{/{currYear}/{currMonth}/deleteExpense(currYear=${currYear}, currMonth=${currMonth})}">
+                        <input type="hidden" name="id" th:value="${expense.id}">
                         <button type="submit" class="delete-btn">x</button>
                     </form>
                 </td>
@@ -54,7 +54,7 @@
         </table>
         <div class="sum-out">
             <b>Summe: </b>
-            <span th:text="${#numbers.formatDecimal(summeOut, 1, 'COMMA', 2, 'POINT')}">0.00</span>
+            <span th:text="${#numbers.formatDecimal(sumOut, 1, 'COMMA', 2, 'POINT')}">0.00</span>
             <span>€</span>
         </div>
     </div>

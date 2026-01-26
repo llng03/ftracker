@@ -35,7 +35,7 @@ public class WebControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    //hier macht der mock Probleme, weil der Aufruf der Methode getMonthsEinnahmen null zurückgibt weil costManager gemockt...
+    //mock makes problems, because call of the method getMonthsIncome returns null because costManager is mocked...
     @MockitoBean
     private CostManager costManager;
 
@@ -62,16 +62,16 @@ public class WebControllerTest {
     void test1() throws Exception {
         mockMvc.perform(get("/2025/6"))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("einnahme", "ausgabe", "einnahmen", "ausgaben", "summeIn", "summeOut", "differenz"))
+                .andExpect(model().attributeExists("income", "expense", "incomes", "expenses", "sumIn", "sumOut", "difference"))
                 .andExpect(view().name("index"));
     }
 
     @Test
     @DisplayName("einnahmeAbschicken funktioniert falls valid")
     void test2() throws Exception {
-        mockMvc.perform(post("/2025/6/einnahme")
+        mockMvc.perform(post("/2025/6/income")
                         .param("descr", "TestEinnahme")
-                        .param("betrag", "100.00"))
+                        .param("amount", "100.00"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/2025/6"));
 
@@ -80,11 +80,11 @@ public class WebControllerTest {
     @Test
     @DisplayName("einnahmeAbschicken funktioniert nicht falls nicht valid")
     void test3() throws Exception {
-        mockMvc.perform(post("/2025/6/einnahme")
+        mockMvc.perform(post("/2025/6/income")
                         .param("descr", "")
-                        .param("betrag", "-100.00"))
+                        .param("amount", "-100.00"))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeHasFieldErrors("cost", "descr", "betrag"))
+                .andExpect(model().attributeHasFieldErrors("cost", "descr", "amount"))
                 .andExpect(model().errorCount(2));
     }
 
@@ -96,11 +96,11 @@ public class WebControllerTest {
 
         mockMvc.perform(get("/2025/6"))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("einnahmen"))
-                .andExpect(model().attribute("einnahmen", hasItem(
+                .andExpect(model().attributeExists("incomes"))
+                .andExpect(model().attribute("incomes", hasItem(
                         allOf(
                                 hasProperty("descr", is("TestEinnahme")),
-                                hasProperty("betrag", is(new BigDecimal("1000")))
+                                hasProperty("amount", is(new BigDecimal("1000")))
                         )
                 )));
     }
@@ -109,9 +109,9 @@ public class WebControllerTest {
     @DisplayName("ausgabeAbschicken updatet das Model")
     void test5() throws Exception {
 
-        mockMvc.perform(post("/2025/6/ausgabe")
+        mockMvc.perform(post("/2025/6/expense")
                         .param("descr", "TestAusgabe")
-                        .param("betrag", "50.00"))
+                        .param("amount", "50.00"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/2025/6"));
     }
@@ -123,11 +123,11 @@ public class WebControllerTest {
         when(costManager.getAllMonthsExp(YearMonth.of(2025, Month.JUNE))).thenReturn(Collections.singletonList(exp));
         mockMvc.perform(get("/2025/6"))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("ausgaben"))
-                .andExpect(model().attribute("ausgaben", hasItem(
+                .andExpect(model().attributeExists("expenses"))
+                .andExpect(model().attribute("expenses", hasItem(
                         allOf(
                                 hasProperty("descr", is("TestAusgabe")),
-                                hasProperty("betrag", is(new BigDecimal("50.00")))
+                                hasProperty("amount", is(new BigDecimal("50.00")))
                         )
                 )));
     }
@@ -137,9 +137,9 @@ public class WebControllerTest {
     @DisplayName("festeAusgabeAbschicken funktioniert falls valid")
     void test7() throws Exception {
 
-        mockMvc.perform(post("/2025/6/festeAusgabe")
+        mockMvc.perform(post("/2025/6/fixedExpense")
                         .param("descr", "Miete")
-                        .param("betrag", "330"))
+                        .param("amount", "330"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/2025/6"));
 
@@ -152,11 +152,11 @@ public class WebControllerTest {
         when(costManager.getFixedExp()).thenReturn(Collections.singletonList(fixedCost));
         mockMvc.perform(get("/2025/6"))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("festeAusgaben"))
-                .andExpect(model().attribute("festeAusgaben", hasItem(
+                .andExpect(model().attributeExists("fixedExpenses"))
+                .andExpect(model().attribute("fixedExpenses", hasItem(
                         allOf(
                                 hasProperty("descr", is("Miete")),
-                                hasProperty("betrag", is(new BigDecimal("330")))
+                                hasProperty("amount", is(new BigDecimal("330")))
                         )
                 )));
 
@@ -165,7 +165,7 @@ public class WebControllerTest {
     @Test
     @DisplayName("deleteFixedIncome works")
     void test9() throws Exception {
-        mockMvc.perform(post("/2025/6/deleteFixedEinnahme")
+        mockMvc.perform(post("/2025/6/deleteFixedIncome")
                         .param("descr", "TestEinnahme")
                         .param("start", "2025-01")) // YearMonth als String
                 .andExpect(status().is3xxRedirection())

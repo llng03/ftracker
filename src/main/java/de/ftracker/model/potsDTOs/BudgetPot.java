@@ -1,11 +1,10 @@
-package de.ftracker.model.pots;
+package de.ftracker.model.potsDTOs;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
