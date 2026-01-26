@@ -78,17 +78,6 @@ public class CostTables {
         addCostToExpenses(new Cost(name, amount, false));
     }
 
-    public void addToPots(PotManager potManger, BigDecimal amount) {
-        addCostToExpenses("auf Pots zu Verteilen", amount);
-        potManger.addToUndistributed(amount);
-    }
-
-    public void addToPot(PotManager potManager, BigDecimal amount, String potName) {
-        addCostToExpenses("auf Pot " + potName + " verteilen", amount);
-        potManager.addToUndistributed(amount);
-        potManager.distribute(amount, potName);
-    }
-
     public BigDecimal sumIncomes() {
         return sum(incomes);
     }

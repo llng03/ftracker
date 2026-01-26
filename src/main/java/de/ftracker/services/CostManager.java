@@ -210,13 +210,16 @@ public class CostManager {
         return new MonthlySums(sumIn, sumOut);
     }
 
-    public void addToPots(CostTables thisTables, PotManager potManager, BigDecimal amountD) {
-        thisTables.addToPots(potManager, amountD);
+    public void addToPots(CostTables thisTables, PotManager potManager, BigDecimal amount) {
+        thisTables.addCostToExpenses("auf Pots zu Verteilen", amount);
+        potManager.addToUndistributed(amount);
         costTablesRepository.save(thisTables);
     }
 
-    public void addToPot(CostTables thisTables, PotManager potManager, BigDecimal amoundD, String potName) {
-        thisTables.addToPot(potManager, amoundD, potName);
+    public void addToPot(CostTables thisTables, PotManager potManager, BigDecimal amount, String potName) {
+        thisTables.addCostToExpenses("auf Pot " + potName + " verteilen", amount);
+        potManager.addToUndistributed(amount);
+        potManager.distribute(amount, potName);
         costTablesRepository.save(thisTables);
     }
 }
