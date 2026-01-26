@@ -1,6 +1,6 @@
-package de.ftracker.model;
+package de.ftracker.domain.model;
 
-import de.ftracker.model.costDTOs.Cost;
+import de.ftracker.domain.model.costDTOs.Cost;
 import de.ftracker.services.pots.PotManager;
 import jakarta.persistence.*;
 import lombok.Getter;

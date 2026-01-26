@@ -1,4 +1,4 @@
-package de.ftracker.model.costDTOs;
+package de.ftracker.domain.model.costDTOs;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.Optional;
 
-import static de.ftracker.model.costDTOs.Interval.MONTHLY;
+import static de.ftracker.domain.model.costDTOs.Interval.MONTHLY;
 
 @Getter
 @Setter

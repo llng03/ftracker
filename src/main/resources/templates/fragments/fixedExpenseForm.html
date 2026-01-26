@@ -30,7 +30,7 @@
 
                 <label for="freq">Häufigkeit: </label>
                 <select id="freq" th:field="*{frequency}">
-                    <option th:each="option: ${T(de.ftracker.model.costDTOs.Interval).values()}" th:value="${option}" th:text="${option.getLabel()}">Intervall</option>
+                    <option th:each="option: ${T(de.ftracker.domain.model.costDTOs.Interval).values()}" th:value="${option}" th:text="${option.getLabel()}">Intervall</option>
                 </select>
                 <button type="submit">Hinzufügen</button>
             </form>

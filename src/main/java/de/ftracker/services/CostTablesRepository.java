@@ -1,7 +1,7 @@
 package de.ftracker.services;
 
-import de.ftracker.model.CostTables;
-import de.ftracker.model.costDTOs.Cost;
+import de.ftracker.domain.model.CostTables;
+import de.ftracker.domain.model.costDTOs.Cost;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

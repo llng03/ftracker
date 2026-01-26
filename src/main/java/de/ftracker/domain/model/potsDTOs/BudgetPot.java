@@ -1,4 +1,4 @@
-package de.ftracker.model.potsDTOs;
+package de.ftracker.domain.model.potsDTOs;
 
 import jakarta.persistence.*;
 import lombok.Getter;

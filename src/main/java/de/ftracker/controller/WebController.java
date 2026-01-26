@@ -1,9 +1,9 @@
 package de.ftracker.controller;
 
 import de.ftracker.services.CostManager;
-import de.ftracker.model.CostTables;
-import de.ftracker.model.costDTOs.*;
-import de.ftracker.model.potsDTOs.PotForRegularExp;
+import de.ftracker.domain.model.CostTables;
+import de.ftracker.domain.model.costDTOs.*;
+import de.ftracker.domain.model.potsDTOs.PotForRegularExp;
 import de.ftracker.services.pots.PotManager;
 import de.ftracker.utils.MonthData;
 import de.ftracker.utils.MonthNavigation;

@@ -1,4 +1,4 @@
-package de.ftracker.model.costDTOs;
+package de.ftracker.domain.model.costDTOs;
 
 public enum Interval {
     MONTHLY("Montlich"),

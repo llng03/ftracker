@@ -1,6 +1,6 @@
 package de.ftracker.utils;
 
-import de.ftracker.model.costDTOs.Interval;
+import de.ftracker.domain.model.costDTOs.Interval;
 
 public class IntervalCount {
 

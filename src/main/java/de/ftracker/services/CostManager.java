@@ -1,10 +1,10 @@
 package de.ftracker.services;
 
-import de.ftracker.model.CostTables;
-import de.ftracker.model.costDTOs.Cost;
-import de.ftracker.model.costDTOs.FixedCost;
-import de.ftracker.model.costDTOs.FixedCostForm;
-import de.ftracker.model.costDTOs.Interval;
+import de.ftracker.domain.model.CostTables;
+import de.ftracker.domain.model.costDTOs.Cost;
+import de.ftracker.domain.model.costDTOs.FixedCost;
+import de.ftracker.domain.model.costDTOs.FixedCostForm;
+import de.ftracker.domain.model.costDTOs.Interval;
 import de.ftracker.services.pots.PotManager;
 import de.ftracker.utils.IntervalCount;
 import de.ftracker.utils.MonthlySums;
@@ -49,26 +49,31 @@ public class CostManager {
                 .collect(Collectors.toList());
     }
 
+    //domain
     public List<Cost> getIncome(YearMonth yearMonth) {
         return getTablesOf(yearMonth).getIncomes();
     }
 
+    //domain
     public List<Cost> getExp(YearMonth yearMonth) {
         return getTablesOf(yearMonth).getExpenses();
     }
 
+    //domain
     public List<Cost> getAllMonthsIncome(YearMonth month) {
         List<Cost> income = getIncome(month);
         income.addAll(getMonthsIncome(month));
         return income;
     }
 
+    //domain
     public List<Cost> getAllMonthsExp(YearMonth month) {
         List<Cost> exp = getExp(month);
         exp.addAll(getMonthsExp(month));
         return exp;
     }
 
+    //domain
     public List<Cost> getMonthsExp(YearMonth month) {
         return getFixedExp().stream()
                 .filter(fc -> !fc.getStart().isAfter(month))
@@ -76,6 +81,7 @@ public class CostManager {
                 .collect(Collectors.toList());
     }
 
+    //domain
     public List<Cost> getMonthsIncome(YearMonth month) {
         return getFixedIncome().stream()
                 .filter(fc -> !fc.getStart().isAfter(month))
@@ -83,16 +89,19 @@ public class CostManager {
                 .collect(Collectors.toList());
     }
 
+    //domain
     public List<Cost> getApplicableFixedCosts(YearMonth month) {
         List<Cost> incomesAndExpensesM = getMonthsIncome(month);
         incomesAndExpensesM.addAll(getMonthsExp(month));
         return incomesAndExpensesM;
     }
 
+    //domain
     public static BigDecimal getMonthlyCost(FixedCostForm costForm) {
         return costForm.getAmount().divide(BigDecimal.valueOf(IntervalCount.countMonths(costForm.getFrequency())), 2, RoundingMode.HALF_UP);
     }
 
+    //domain
     public static BigDecimal getMonthlyCost(FixedCost expense) {
         return expense.getAmount().divide(BigDecimal.valueOf(IntervalCount.countMonths(expense.getFrequency())), 2, RoundingMode.HALF_UP);
     }
@@ -188,6 +197,7 @@ public class CostManager {
         costTablesRepository.save(table);
     }
 
+    //domain
     public BigDecimal getThisMonthsIncomeSum(YearMonth month) {
         List<Cost> incomes = getMonthsIncome(month);
         incomes.addAll(getTablesOf(month).getIncomes());
@@ -196,6 +206,7 @@ public class CostManager {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    //domain
     public BigDecimal getThisMonthsExpSum(YearMonth month) {
         List<Cost> expenses = getMonthsExp(month);
         expenses.addAll(getTablesOf(month).getExpenses());
@@ -204,6 +215,7 @@ public class CostManager {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    //domain
     public MonthlySums calculateThisMonthsSums(YearMonth month) {
         BigDecimal sumIn = getThisMonthsIncomeSum(month);
         BigDecimal sumOut = getThisMonthsExpSum(month);
