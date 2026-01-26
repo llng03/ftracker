@@ -1,11 +1,11 @@
 package de.ftracker.integration;
 
 import de.ftracker.controller.WebController;
-import de.ftracker.model.costDTOs.Cost;
-import de.ftracker.model.costDTOs.Interval;
+import de.ftracker.domain.model.costDTOs.Cost;
+import de.ftracker.domain.model.costDTOs.Interval;
 import de.ftracker.services.CostManager;
-import de.ftracker.model.CostTables;
-import de.ftracker.model.costDTOs.FixedCost;
+import de.ftracker.domain.model.CostTables;
+import de.ftracker.domain.model.costDTOs.FixedCost;
 import de.ftracker.services.pots.PotManager;
 import de.ftracker.utils.MonthlySums;
 import org.junit.jupiter.api.BeforeEach;
