@@ -134,6 +134,7 @@ public class CostManager {
         FixedCost fixedCost = new FixedCost();
         fixedCost.setDescr(expForm.getDescr());
         fixedCost.setAmount(expForm.getAmount());
+        fixedCost.setIsIncome(false);
         fixedCost.setFrequency(expForm.getFrequency());
         fixedCost.setStart(expForm.getStart());
         fixedCost.setEnd(expForm.getEnd());
