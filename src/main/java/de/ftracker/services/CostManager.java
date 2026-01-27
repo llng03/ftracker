@@ -5,14 +5,13 @@ import de.ftracker.domain.model.costDTOs.Cost;
 import de.ftracker.domain.model.costDTOs.FixedCost;
 import de.ftracker.domain.model.costDTOs.FixedCostForm;
 import de.ftracker.domain.model.costDTOs.Interval;
+import de.ftracker.domain.services.CostAggregationService;
 import de.ftracker.services.pots.PotManager;
-import de.ftracker.utils.IntervalCount;
 import de.ftracker.utils.MonthlySums;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,13 +20,24 @@ import java.util.stream.Collectors;
 public class CostManager {
     private final CostTablesRepository costTablesRepository;
     private final FixedCostsRepository fixedCostsRepository;
+    private final CostAggregationService costAggregationService;
 
 
     public CostManager(CostTablesRepository costTablesRepository, FixedCostsRepository fixedCostsRepository) {
         this.costTablesRepository = costTablesRepository;
         this.fixedCostsRepository = fixedCostsRepository;
+        this.costAggregationService = new CostAggregationService();
     }
+    /*
+    getIncome: the whole income table
+    getFixedIncome: the whole fixed income table
+    getAllIncome: whole income and fixed income table combined
+    getMonthsIncome: every income which date is in the given month
+    getMonthsFixedIncome: every fixedIncome, that timespan contains the given Month
+    getAllMonthsIncome: getMonthsIncome and getMonthsFixedIncome combined
+     */
 
+    // -- READ --
     public CostTables getTablesOf(YearMonth yearMonth) {
         return costTablesRepository.findByMonthAndYear(yearMonth.getMonthValue(), yearMonth.getYear())
                 .orElseGet(() -> {
@@ -36,6 +46,15 @@ public class CostManager {
                     return costTablesRepository.save(newTables);
                 });
     }
+
+    public List<Cost> getMonthsIncome(YearMonth yearMonth) {
+        return getTablesOf(yearMonth).getIncomes();
+    }
+
+    public List<Cost> getMonthsExp(YearMonth yearMonth) {
+        return getTablesOf(yearMonth).getExpenses();
+    }
+
 
     public List<FixedCost> getFixedIncome() {
         return fixedCostsRepository.findAll().stream()
@@ -49,72 +68,46 @@ public class CostManager {
                 .collect(Collectors.toList());
     }
 
-    //domain
-    public List<Cost> getIncome(YearMonth yearMonth) {
-        return getTablesOf(yearMonth).getIncomes();
-    }
 
-    //domain
-    public List<Cost> getExp(YearMonth yearMonth) {
-        return getTablesOf(yearMonth).getExpenses();
-    }
-
-    //domain
     public List<Cost> getAllMonthsIncome(YearMonth month) {
-        List<Cost> income = getIncome(month);
-        income.addAll(getMonthsIncome(month));
+        List<Cost> income = getMonthsIncome(month);
+        income.addAll(costAggregationService.getApplicableFixedCosts(getFixedIncome(), month));
         return income;
     }
 
-    //domain
     public List<Cost> getAllMonthsExp(YearMonth month) {
-        List<Cost> exp = getExp(month);
-        exp.addAll(getMonthsExp(month));
+        List<Cost> exp = getMonthsExp(month);
+        exp.addAll(costAggregationService.getApplicableFixedCosts(getFixedExp(), month));
         return exp;
     }
 
-    //domain
-    public List<Cost> getMonthsExp(YearMonth month) {
-        return getFixedExp().stream()
-                .filter(fc -> !fc.getStart().isAfter(month))
-                .filter(fc -> fc.getEnd().map(end -> !end.isBefore(month)).orElse(true))
-                .collect(Collectors.toList());
+
+    //DAS HIER IST EIGENTLICH NUR WEITERLEITUNG DER METHODEN
+    public MonthlySums calculateThisMonthsSums(YearMonth month) {
+        return costAggregationService.calculateMonthlySums(
+                getAllMonthsIncome(month),
+                getAllMonthsExp(month)
+        );
     }
 
-    //domain
-    public List<Cost> getMonthsIncome(YearMonth month) {
-        return getFixedIncome().stream()
-                .filter(fc -> !fc.getStart().isAfter(month))
-                .filter(fc -> fc.getEnd().map(end -> !end.isBefore(month)).orElse(true))
-                .collect(Collectors.toList());
+    public BigDecimal getMonthlyCost(FixedCostForm costForm) {
+        return costAggregationService.getMonthlyAmount(costForm);
     }
 
-    //domain
-    public List<Cost> getApplicableFixedCosts(YearMonth month) {
-        List<Cost> incomesAndExpensesM = getMonthsIncome(month);
-        incomesAndExpensesM.addAll(getMonthsExp(month));
-        return incomesAndExpensesM;
+    public BigDecimal getMonthlyCost(FixedCost fixedCost) {
+        return costAggregationService.getMonthlyAmount(fixedCost);
     }
 
-    //domain
-    public static BigDecimal getMonthlyCost(FixedCostForm costForm) {
-        return costForm.getAmount().divide(BigDecimal.valueOf(IntervalCount.countMonths(costForm.getFrequency())), 2, RoundingMode.HALF_UP);
-    }
-
-    //domain
-    public static BigDecimal getMonthlyCost(FixedCost expense) {
-        return expense.getAmount().divide(BigDecimal.valueOf(IntervalCount.countMonths(expense.getFrequency())), 2, RoundingMode.HALF_UP);
-    }
-
+    // - - WRITE - -
     @Transactional
-    public void addIncome(int year, int month, Cost income) {
+    public void addMonthsIncome(int year, int month, Cost income) {
         CostTables costTables = costTablesRepository.findByMonthAndYear(month, year)
                 .orElseThrow();
         costTables.addCostToIncomes(income);
     }
 
     @Transactional
-    public void addExp(int year, int month, Cost exp) {
+    public void addMonthsExp(int year, int month, Cost exp) {
         CostTables costTables = costTablesRepository.findByMonthAndYear(month, year)
                 .orElseThrow();
         costTables.addCostToExpenses(exp);
@@ -134,7 +127,6 @@ public class CostManager {
 
     @Transactional
     public void addToFixedIncome(FixedCost income) {
-        System.out.println("now we save: " + income + "into fixedIncomeRepository");
         fixedCostsRepository.save(income);
     }
 
@@ -151,21 +143,19 @@ public class CostManager {
     }
 
     public void addToFixedExp(FixedCost exp) {
-        System.out.println("now we save: " + exp + "into fixedExpRepository");
         if(exp.getFrequency() == Interval.MONTHLY) {
             fixedCostsRepository.save(exp);
         } else {
             fixedCostsRepository.save(
-                    new FixedCost(exp.getDescr(), getMonthlyCost(exp), false, Interval.MONTHLY, exp.getStart(), exp.getEndValue())
+                    new FixedCost(exp.getDescr(), costAggregationService.getMonthlyAmount(exp), false, Interval.MONTHLY, exp.getStart(), exp.getEndValue())
             );
         }
     }
 
+    // - - DELETE - -
     public void deleteFromFixedIncome(FixedCost income) {
         fixedCostsRepository.delete(income);
     }
-
-
 
     public void deleteFromFixedIncome(String income, YearMonth start) {
         fixedCostsRepository.deleteByDescrAndStart(income, start.getYear(), start.getMonthValue());
@@ -197,31 +187,7 @@ public class CostManager {
         costTablesRepository.save(table);
     }
 
-    //domain
-    public BigDecimal getThisMonthsIncomeSum(YearMonth month) {
-        List<Cost> incomes = getMonthsIncome(month);
-        incomes.addAll(getTablesOf(month).getIncomes());
-        return incomes.stream()
-                .map(Cost::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-    //domain
-    public BigDecimal getThisMonthsExpSum(YearMonth month) {
-        List<Cost> expenses = getMonthsExp(month);
-        expenses.addAll(getTablesOf(month).getExpenses());
-        return expenses.stream()
-                .map(Cost::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-    //domain
-    public MonthlySums calculateThisMonthsSums(YearMonth month) {
-        BigDecimal sumIn = getThisMonthsIncomeSum(month);
-        BigDecimal sumOut = getThisMonthsExpSum(month);
-        return new MonthlySums(sumIn, sumOut);
-    }
-
+    // - - POTS - -
     public void addToPots(CostTables thisTables, PotManager potManager, BigDecimal amount) {
         thisTables.addCostToExpenses("auf Pots zu Verteilen", amount);
         potManager.addToUndistributed(amount);

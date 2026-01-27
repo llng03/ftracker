@@ -53,7 +53,7 @@ public class WebController {
             return "index";
         }
 
-        costManager.addIncome(currYear, currMonth, income);
+        costManager.addMonthsIncome(currYear, currMonth, income);
         return "redirect:/" + currYear + "/" + currMonth;
     }
 
@@ -67,7 +67,7 @@ public class WebController {
 
 
         CostTables costTables = costManager.getTablesOf(YearMonth.of(currYear, currMonth));
-        costManager.addExp(currYear, currMonth, expense);
+        costManager.addMonthsExp(currYear, currMonth, expense);
         model.addAttribute("expenses", costTables.getExpenses());
         return "redirect:/" + currYear + "/" + currMonth;
     }
@@ -91,7 +91,9 @@ public class WebController {
             return "indexMonth";
         }
         if(expense.getFrequency() != Interval.MONTHLY) {
-            potManager.addPot(new PotForRegularExp(expense.getDescr(), expense.getStart().minusMonths(1), expense.getStart().minusMonths(1), costManager.getMonthlyCost(expense), expense.getFrequency()));
+            potManager.addPot(
+                    new PotForRegularExp(expense.getDescr(), expense.getStart().minusMonths(1), expense.getStart().minusMonths(1),
+                    costManager.getMonthlyCost(expense), expense.getFrequency()));
         }
         costManager.addToFixedExp(expense);
         return "redirect:/" + currYear + "/" + currMonth;
