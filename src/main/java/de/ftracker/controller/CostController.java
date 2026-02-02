@@ -67,4 +67,10 @@ public class CostController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/deleteFixedCost")
+    public ResponseEntity<Void> removeFixedCost(@RequestParam Long costId) {
+        costManager.deleteFromFixedCosts(costId);
+        return ResponseEntity.ok().build();
+    }
+
 }

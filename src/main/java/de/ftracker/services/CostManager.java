@@ -192,20 +192,8 @@ public class CostManager {
     }
 
     // - - DELETE - -
-    public void deleteFromFixedIncome(FixedCost income) {
-        fixedCostsRepository.delete(income);
-    }
-
-    public void deleteFromFixedIncome(String income, YearMonth start) {
-        fixedCostsRepository.deleteByDescrAndStart(income, start.getYear(), start.getMonthValue());
-    }
-
-    public void deleteFromFixedExp(FixedCost expense) {
-        fixedCostsRepository.delete(expense);
-    }
-
-    public void deleteFromFixedExp(String expense, YearMonth start) {
-        fixedCostsRepository.deleteByDescrAndStart(expense, start.getYear(), start.getMonthValue());
+    public void deleteFromFixedCosts(Long id) {
+        fixedCostsRepository.deleteById(id);
     }
 
     public void deleteFromIncome(Long id, int year, int month) {
