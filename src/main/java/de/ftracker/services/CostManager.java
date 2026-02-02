@@ -51,8 +51,16 @@ public class CostManager {
         return getTablesOf(yearMonth).getIncomes();
     }
 
+    public List<Cost> getMonthsIncome(int year, int month) {
+        return getMonthsIncome(YearMonth.of(year, month));
+    }
+
     public List<Cost> getMonthsExp(YearMonth yearMonth) {
         return getTablesOf(yearMonth).getExpenses();
+    }
+
+    public List<Cost> getMonthsExp(int year, int month) {
+        return getMonthsExp(YearMonth.of(year, month));
     }
 
 
@@ -68,6 +76,22 @@ public class CostManager {
                 .collect(Collectors.toList());
     }
 
+    public List<FixedCost> getMonthsFixedIncome(YearMonth yearMonth) {
+        return costAggregationService.getApplicableFixedCosts(getFixedIncome(), yearMonth);
+    }
+
+    public List<FixedCost> getMonthsFixedIncome(int year, int month) {
+        return getMonthsFixedIncome(YearMonth.of(year, month));
+    }
+
+    public List<FixedCost> getMonthsFixedExp(YearMonth yearMonth) {
+        return costAggregationService.getApplicableFixedCosts(getFixedExp(), yearMonth);
+    }
+
+    public List<FixedCost> getMonthsFixedExp(int year, int month) {
+        return getMonthsFixedExp(YearMonth.of(year, month));
+    }
+
 
     public List<Cost> getAllMonthsIncome(YearMonth month) {
         List<Cost> income = getMonthsIncome(month);
@@ -75,10 +99,18 @@ public class CostManager {
         return income;
     }
 
+    public List<Cost> getAllMonthsIncome(int year, int month) {
+        return getAllMonthsIncome(YearMonth.of(year, month));
+    }
+
     public List<Cost> getAllMonthsExp(YearMonth month) {
         List<Cost> exp = getMonthsExp(month);
         exp.addAll(costAggregationService.getApplicableFixedCosts(getFixedExp(), month));
         return exp;
+    }
+
+    public List<Cost> getAllMonthsExp(int year, int month) {
+        return getAllMonthsExp(YearMonth.of(year, month));
     }
 
 
@@ -88,6 +120,10 @@ public class CostManager {
                 getAllMonthsIncome(month),
                 getAllMonthsExp(month)
         );
+    }
+
+    public MonthlySums calculateThisMonthsSums(int year, int month) {
+        return calculateThisMonthsSums(YearMonth.of(year, month));
     }
 
     public BigDecimal getMonthlyCost(FixedCostForm costForm) {

@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 public class Cost {
 
     @Id
+    @Column(unique=true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
