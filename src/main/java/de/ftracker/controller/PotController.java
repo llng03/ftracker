@@ -8,18 +8,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/pots")
 @CrossOrigin(origins = "http://localhost:5173")
-public class RestAPIPotController {
+public class PotController {
     private final PotOverviewDTOService potOverviewDTOService;
     private final PotManager potManager;
 
     @Autowired
-    public RestAPIPotController(PotOverviewDTOService potOverviewDTOService, PotManager potManager) {
+    public PotController(PotOverviewDTOService potOverviewDTOService, PotManager potManager) {
         this.potOverviewDTOService = potOverviewDTOService;
         this.potManager = potManager;
     }
@@ -27,6 +27,11 @@ public class RestAPIPotController {
     @GetMapping
     public PotOverviewDTO getPotOverview() {
         return potOverviewDTOService.getPotOverviewDTO();
+    }
+
+    @GetMapping("/potList")
+    public List<BudgetPot> getPots() {
+        return potManager.getPots();
     }
 
     @PostMapping("/new")
