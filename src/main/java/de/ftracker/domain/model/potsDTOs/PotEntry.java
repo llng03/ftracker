@@ -9,6 +9,7 @@ import java.time.LocalDate;
 @Entity
 public class PotEntry {
     @Id
+    @Column(unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -22,6 +23,10 @@ public class PotEntry {
     public PotEntry(LocalDate date, BigDecimal amount) {
         this.date = date;
         this.amount = amount;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public BigDecimal getAmount() {

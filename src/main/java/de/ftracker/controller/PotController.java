@@ -1,79 +1,60 @@
 package de.ftracker.controller;
 
 import de.ftracker.domain.model.potsDTOs.BudgetPot;
-import de.ftracker.domain.model.potsDTOs.PotForRegularExp;
-import de.ftracker.services.pots.PotManager;
+import de.ftracker.services.pots.*;
+import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.YearMonth;
+import java.util.List;
 
-@Controller
+@RestController
+@RequestMapping("/api/pots")
+@CrossOrigin(origins = "http://localhost:5173")
 public class PotController {
+    private final PotOverviewDTOService potOverviewDTOService;
     private final PotManager potManager;
 
     @Autowired
-    public PotController(PotManager potManager) {
+    public PotController(PotOverviewDTOService potOverviewDTOService, PotManager potManager) {
+        this.potOverviewDTOService = potOverviewDTOService;
         this.potManager = potManager;
     }
 
-    @GetMapping("/pots")
-    public String pots(Model model) {
-        prepareModel(model, YearMonth.now());
-        return "pots";
+    @GetMapping
+    public PotOverviewDTO getPotOverview() {
+        return potOverviewDTOService.getPotOverviewDTO();
     }
 
-    @PostMapping("/pots/new")
-    public String createNewPot(Model model, @RequestParam("name") String newPotName) {
-        potManager.addPot(new BudgetPot(newPotName));
-        model.addAttribute("pots", potManager.getPots());
-        return "redirect:/pots";
+    @GetMapping("/potList")
+    public List<BudgetPot> getPots() {
+        return potManager.getPots();
     }
 
-    @PostMapping("/pots/distribute")
-    public String distribute(Model model, @RequestParam("potName") String potName,
-                             @RequestParam("amount") double amount) {
-        try {
-            potManager.distribute(BigDecimal.valueOf(amount), potName);
-        } catch(IllegalArgumentException e) {
-            model.addAttribute("showDistributeModal", true);
-            model.addAttribute("error", "Es wurde eine höhere Summe verteilt, als vorhanden ist :c");
-            model.addAttribute("pots", potManager.getPots());
-            return "pots";
-        }
-        model.addAttribute("pots", potManager.getPots());
-        return "redirect:/pots";
+    @PostMapping("/new")
+    public ResponseEntity<Void> addPot(@Valid @RequestBody BudgetPot pot) {
+        potManager.addPot(pot);
+        return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/pots/deletePot")
-    public String deletePot(Model model, @RequestParam String potName) {
-        potManager.deletePotByName(potName);
-        return "redirect:/pots";
+    @PostMapping("/distribute")
+    public ResponseEntity<Void> distribute(@Valid @RequestBody DistributeRequest request) {
+        potManager.distribute(request.getPotId(), request.getAmount());
+        return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/pots/pay")
-    public String pay(Model model, @RequestParam("potName") String potName, @RequestParam("payAmount") double payAmount) {
-        BudgetPot pot = potManager.getPot(potName);
-        potManager.pay(pot, LocalDate.now(), new BigDecimal(payAmount));
-        //pot.pay(LocalDate.now(), new BigDecimal(payAmount));
-        return "redirect:/pots";
+    @PostMapping("/takeMoney")
+    public ResponseEntity<Void> takeMoney(@Valid @RequestBody TakeMoneyFromPotRequest request) {
+        potManager.pay(request.getPotId(), LocalDate.now(), request.getAmount());
+        return ResponseEntity.ok().build();
     }
 
-    private void prepareModel(Model model, YearMonth curr) {
-        model.addAttribute("pots", potManager.getPots());
-        model.addAttribute("undistributed", potManager.getUndistributed());
-        model.addAttribute("sumAll", potManager.getTotal());
-        for(BudgetPot pot: potManager.getPots()) {
-            if(pot instanceof PotForRegularExp){
-                potManager.update((PotForRegularExp) pot,curr);
-            }
-        }
-
+    @DeleteMapping("/deletePot")
+    public ResponseEntity<Void> deletePot(@RequestParam Long potId) {
+        potManager.deletePotById(potId);
+        return ResponseEntity.ok().build();
     }
 }

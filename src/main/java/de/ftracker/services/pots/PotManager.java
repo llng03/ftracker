@@ -3,6 +3,8 @@ package de.ftracker.services.pots;
 import de.ftracker.domain.model.potsDTOs.BudgetPot;
 import de.ftracker.domain.model.potsDTOs.PotForRegularExp;
 import de.ftracker.domain.model.potsDTOs.UndistributedPotAmount;
+import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -10,6 +12,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,7 +21,7 @@ public class PotManager {
     private final PotRepository potRepository;
     private final PotSummaryRepository potSummaryRepository;
 
-    private UndistributedPotAmount potSummary;
+    private final UndistributedPotAmount potSummary;
 
     public PotManager(PotRepository potRepository, PotSummaryRepository potSummaryRepository){
         this.potRepository = potRepository;
@@ -47,10 +50,12 @@ public class PotManager {
 
     }
 
+    @Transactional
     public void distribute(BigDecimal amount, String potName) {
         distribute(amount, getPot(potName));
     }
 
+    @Transactional
     public void distribute(BigDecimal amount, BudgetPot pot) {
         BigDecimal undistributed = getUndistributed();
         if(undistributed.compareTo(amount) < 0) {
@@ -59,6 +64,13 @@ public class PotManager {
         potSummary.setUndistributed(undistributed.subtract(amount));
         potSummaryRepository.save(potSummary);
         addEntry(pot, LocalDate.now(), amount);
+    }
+
+    @Transactional
+    public void distribute(@NotNull long potId, @NotNull BigDecimal amount) {
+        BudgetPot pot = potRepository.findById(potId)
+                .orElseThrow(() -> new IllegalArgumentException("Pot nicht gefunden: " + potId));
+        distribute(amount, pot);
     }
 
     public void addEntry(BudgetPot pot, LocalDate date, BigDecimal amount) {
@@ -71,8 +83,17 @@ public class PotManager {
         potSummaryRepository.save(potSummary);
     }
 
+    @Transactional
     public void deletePotByName(String string) {
         BudgetPot pot = getPot(string);
+        addToUndistributed(pot.sum());
+        potRepository.delete(pot);
+    }
+
+    @Transactional
+    public void deletePotById(Long potId) {
+        BudgetPot pot = potRepository.findById(potId)
+                .orElseThrow(() -> new IllegalArgumentException("Pot nicht gefunden: " + potId));
         addToUndistributed(pot.sum());
         potRepository.delete(pot);
     }
@@ -91,9 +112,19 @@ public class PotManager {
         return getPots().stream().map(BudgetPot::sum).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    public void pay(Long potId, LocalDate date, BigDecimal amount) {
+        BudgetPot pot = potRepository.findById(potId)
+                .orElseThrow(() -> new IllegalArgumentException("Pot nicht gefunden: " + potId));
+        pay(pot, date, amount);
+    }
+
     public void pay(BudgetPot pot, LocalDate date, BigDecimal amount) {
         pot.pay(date, amount);
         potRepository.save(pot);
         potSummaryRepository.save(potSummary);
+    }
+
+    public Optional<BudgetPot> getPotById(Long potId) {
+        return potRepository.findById(potId);
     }
 }

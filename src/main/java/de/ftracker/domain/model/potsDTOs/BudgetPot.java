@@ -2,6 +2,7 @@ package de.ftracker.domain.model.potsDTOs;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ import java.util.List;
 @DiscriminatorColumn(name = "pot_type")
 public class BudgetPot {
     @Id
+    @Column(unique=true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
