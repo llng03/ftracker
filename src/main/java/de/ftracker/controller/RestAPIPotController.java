@@ -17,11 +17,9 @@ import java.time.LocalDate;
 public class RestAPIPotController {
     private final PotOverviewDTOService potOverviewDTOService;
     private final PotManager potManager;
-    PotController potController;
 
     @Autowired
-    public RestAPIPotController(PotController potController, PotOverviewDTOService potOverviewDTOService, PotManager potManager) {
-        this.potController = potController;
+    public RestAPIPotController(PotOverviewDTOService potOverviewDTOService, PotManager potManager) {
         this.potOverviewDTOService = potOverviewDTOService;
         this.potManager = potManager;
     }
