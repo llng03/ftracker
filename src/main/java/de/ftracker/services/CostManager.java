@@ -8,6 +8,7 @@ import de.ftracker.domain.model.costDTOs.Interval;
 import de.ftracker.domain.model.potsDTOs.BudgetPot;
 import de.ftracker.domain.services.CostAggregationService;
 import de.ftracker.services.pots.PotManager;
+import de.ftracker.services.pots.UpdateCostRequest;
 import de.ftracker.utils.MonthlySums;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -236,5 +237,18 @@ public class CostManager {
             tables.addCostToExpenses("auf Pots zu Verteilen", amount);
             potManager.addToUndistributed(amount);
         }
+    }
+
+    public void updateCost(UpdateCostRequest updateCostRequest, int year, int month) {
+        CostTables tables = costTablesRepository.findByMonthAndYear(month,year).orElseThrow( () ->
+                new IllegalArgumentException("Found no tables for " +  year + "-" + month));
+        Cost cost = tables.findCostById(updateCostRequest.getCostId()).orElseThrow(() ->
+                new IllegalArgumentException("Found no cost with id " + updateCostRequest.getCostId()));
+        if(!updateCostRequest.getDescr().isEmpty()) {
+            cost.setDescr(updateCostRequest.getDescr());
+        } else if(updateCostRequest.getAmount() != null) {
+            cost.setAmount(updateCostRequest.getAmount());
+        }
+        costTablesRepository.save(tables);
     }
 }

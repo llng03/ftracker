@@ -10,6 +10,8 @@ import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Getter
 @Setter
@@ -65,6 +67,14 @@ public class CostTables {
 
     public void setExpenses(List<Cost> expenses) {
         this.expenses = expenses;
+    }
+
+    public Optional<Cost> findCostById(Long id) {
+        Optional<Cost> cost = incomes.stream().filter(c -> c.getId() == id).findAny();
+        if(!cost.isPresent()) {
+            cost = expenses.stream().filter(c -> c.getId() == id).findAny();
+        }
+        return cost;
     }
 
     public void addCostToIncomes(Cost cost){

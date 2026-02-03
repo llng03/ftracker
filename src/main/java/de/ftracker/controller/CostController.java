@@ -7,6 +7,7 @@ import de.ftracker.services.MonthOverviewDTO;
 import de.ftracker.services.MonthOverviewService;
 import de.ftracker.services.pots.DistributeRequest;
 import de.ftracker.services.pots.PotManager;
+import de.ftracker.services.pots.UpdateCostRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -64,6 +65,13 @@ public class CostController {
                 distributeRequest.getAmount(),
                 distributeRequest.getPotId()
         );
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/updateCost")
+    public ResponseEntity<Void> updateCost(@RequestBody UpdateCostRequest updateCostRequest,
+                                           @RequestParam int year, @RequestParam int month) {
+        costManager.updateCost(updateCostRequest, year, month);
         return ResponseEntity.ok().build();
     }
 
