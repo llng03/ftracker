@@ -196,20 +196,12 @@ public class CostManager {
         fixedCostsRepository.deleteById(id);
     }
 
-    public void deleteFromIncome(Long id, int year, int month) {
+    public void deleteFromCosts(Long id, int year, int month) {
         CostTables table = costTablesRepository.customFind(year, month)
                 .orElseThrow(() -> new IllegalArgumentException(
                 "No CostTable found for " + year + "-" + month
         ));
         table.getIncomes().removeIf(e -> e.getId().equals(id));
-        costTablesRepository.save(table);
-    }
-
-    public void deleteFromExp(Long id, int year, int month) {
-        CostTables table = costTablesRepository.customFind(year, month)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "No CostTable found for " + year + "-" + month
-                ));
         table.getExpenses().removeIf(e -> e.getId().equals(id));
         costTablesRepository.save(table);
     }
