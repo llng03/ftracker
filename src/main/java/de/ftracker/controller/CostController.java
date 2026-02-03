@@ -8,6 +8,7 @@ import de.ftracker.services.MonthOverviewService;
 import de.ftracker.services.pots.DistributeRequest;
 import de.ftracker.services.pots.PotManager;
 import de.ftracker.services.pots.UpdateCostRequest;
+import de.ftracker.services.pots.UpdateFixedCostRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -72,6 +73,12 @@ public class CostController {
     public ResponseEntity<Void> updateCost(@RequestBody UpdateCostRequest updateCostRequest,
                                            @RequestParam int year, @RequestParam int month) {
         costManager.updateCost(updateCostRequest, year, month);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/updateFixedCost")
+    public ResponseEntity<Void> updateFixedCost(@RequestBody UpdateFixedCostRequest updateFixedCostRequest) {
+        costManager.updateFixedCost(updateFixedCostRequest);
         return ResponseEntity.ok().build();
     }
 

@@ -9,6 +9,7 @@ import de.ftracker.domain.model.potsDTOs.BudgetPot;
 import de.ftracker.domain.services.CostAggregationService;
 import de.ftracker.services.pots.PotManager;
 import de.ftracker.services.pots.UpdateCostRequest;
+import de.ftracker.services.pots.UpdateFixedCostRequest;
 import de.ftracker.utils.MonthlySums;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -244,11 +245,31 @@ public class CostManager {
                 new IllegalArgumentException("Found no tables for " +  year + "-" + month));
         Cost cost = tables.findCostById(updateCostRequest.getCostId()).orElseThrow(() ->
                 new IllegalArgumentException("Found no cost with id " + updateCostRequest.getCostId()));
-        if(!updateCostRequest.getDescr().isEmpty()) {
-            cost.setDescr(updateCostRequest.getDescr());
-        } else if(updateCostRequest.getAmount() != null) {
-            cost.setAmount(updateCostRequest.getAmount());
-        }
+        cost.setDescr(updateCostRequest.getDescr());
+        cost.setAmount(updateCostRequest.getAmount());
         costTablesRepository.save(tables);
+    }
+
+    public void updateFixedCost(UpdateFixedCostRequest updateFixedCostRequest) {
+        FixedCost fCost = fixedCostsRepository.findById(updateFixedCostRequest.getCostId())
+                .orElseThrow( () -> new IllegalArgumentException(
+                        "Found no FixedCost with id "+ updateFixedCostRequest.getCostId()
+                )
+        );
+        fCost.setDescr(updateFixedCostRequest.getDescr());
+        fCost.setAmount(updateFixedCostRequest.getAmount());
+        fCost.setFrequency(updateFixedCostRequest.getFrequency());
+        fCost.setStartMonth(updateFixedCostRequest.getStartMonth().getMonth().getValue());
+        fCost.setStartYear(updateFixedCostRequest.getStartMonth().getYear());
+        if(updateFixedCostRequest.getEndMonth() == null) {
+            fCost.setEndMonth(null);
+            fCost.setEndYear(null);
+        } else {
+            fCost.setEndMonth(updateFixedCostRequest.getEndMonth().getMonth().getValue());
+            fCost.setEndYear(updateFixedCostRequest.getEndMonth().getYear());
+        }
+
+
+        fixedCostsRepository.save(fCost);
     }
 }

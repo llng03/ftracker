@@ -1,10 +1,12 @@
 package de.ftracker.domain.model.potsDTOs;
 
+import de.ftracker.domain.model.costDTOs.Cost;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 
 @Entity
 public class PotEntry {
@@ -18,7 +20,12 @@ public class PotEntry {
     @NotNull
     private BigDecimal amount;
 
+
+
+
     public PotEntry(){}
+
+
 
     public PotEntry(LocalDate date, BigDecimal amount) {
         this.date = date;
