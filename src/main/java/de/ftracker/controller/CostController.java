@@ -3,12 +3,13 @@ package de.ftracker.controller;
 import de.ftracker.domain.model.costDTOs.Cost;
 import de.ftracker.domain.model.costDTOs.FixedCostForm;
 import de.ftracker.services.CostManager;
-import de.ftracker.services.MonthOverviewDTO;
+import de.ftracker.services.DTOs.DeleteEntryRequest;
+import de.ftracker.services.DTOs.DistributeRequest;
+import de.ftracker.services.DTOs.UpdateCostRequest;
+import de.ftracker.services.DTOs.UpdateFixedCostRequest;
+import de.ftracker.services.DTOs.MonthOverviewDTO;
 import de.ftracker.services.MonthOverviewService;
-import de.ftracker.services.pots.DistributeRequest;
-import de.ftracker.services.pots.PotManager;
-import de.ftracker.services.pots.UpdateCostRequest;
-import de.ftracker.services.pots.UpdateFixedCostRequest;
+import de.ftracker.services.PotManager;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -90,7 +91,16 @@ public class CostController {
 
     @DeleteMapping("/deleteCost")
     public ResponseEntity<Void> removeCost(@RequestParam Long costId, @RequestParam int year, @RequestParam int month) {
-        costManager.deleteFromCosts(costId, year, month);
+        System.out.println("REMVOE COST");
+        System.out.println(costId);
+        costManager.deleteFromCosts(costId, year, month, potManager);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/deletePotEntry")
+    public ResponseEntity<Void> deletePotEntry(@RequestBody DeleteEntryRequest deleteEntryRequest) {
+        costManager.deletePotEntry(deleteEntryRequest, potManager);
+        return ResponseEntity.ok().build();
+    }
+
 }

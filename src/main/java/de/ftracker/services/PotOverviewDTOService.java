@@ -1,5 +1,6 @@
-package de.ftracker.services.pots;
+package de.ftracker.services;
 
+import de.ftracker.services.DTOs.PotOverviewDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

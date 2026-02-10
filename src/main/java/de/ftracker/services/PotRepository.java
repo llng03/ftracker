@@ -1,4 +1,4 @@
-package de.ftracker.services.pots;
+package de.ftracker.services;
 
 import de.ftracker.domain.model.potsDTOs.BudgetPot;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -2,9 +2,9 @@ package de.ftracker.unit;
 
 import de.ftracker.domain.model.potsDTOs.BudgetPot;
 import de.ftracker.domain.model.potsDTOs.UndistributedPotAmount;
-import de.ftracker.services.pots.PotManager;
-import de.ftracker.services.pots.PotRepository;
-import de.ftracker.services.pots.PotSummaryRepository;
+import de.ftracker.services.PotManager;
+import de.ftracker.services.PotRepository;
+import de.ftracker.services.PotSummaryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

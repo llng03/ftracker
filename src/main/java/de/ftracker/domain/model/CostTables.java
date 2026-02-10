@@ -1,7 +1,6 @@
 package de.ftracker.domain.model;
 
 import de.ftracker.domain.model.costDTOs.Cost;
-import de.ftracker.services.pots.PotManager;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -70,9 +69,9 @@ public class CostTables {
     }
 
     public Optional<Cost> findCostById(Long id) {
-        Optional<Cost> cost = incomes.stream().filter(c -> c.getId() == id).findAny();
+        Optional<Cost> cost = incomes.stream().filter(c -> c.getId().equals(id)).findAny();
         if(!cost.isPresent()) {
-            cost = expenses.stream().filter(c -> c.getId() == id).findAny();
+            cost = expenses.stream().filter(c -> c.getId().equals(id)).findAny();
         }
         return cost;
     }
@@ -82,6 +81,7 @@ public class CostTables {
     }
 
     public void addCostToExpenses(Cost cost){
+
         this.expenses.add(cost);
     }
 
@@ -101,5 +101,10 @@ public class CostTables {
         return costs.stream()
                 .map(e -> e.getAmount())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public void deleteCostById(Long id) {
+        incomes.removeIf(c -> Objects.equals(c.getId(), id));
+        expenses.removeIf(c -> Objects.equals(c.getId(), id));
     }
 }

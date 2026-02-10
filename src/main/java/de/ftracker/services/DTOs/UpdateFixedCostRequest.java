@@ -1,4 +1,4 @@
-package de.ftracker.services.pots;
+package de.ftracker.services.DTOs;
 
 import de.ftracker.domain.model.costDTOs.Interval;
 import jakarta.validation.constraints.NotNull;

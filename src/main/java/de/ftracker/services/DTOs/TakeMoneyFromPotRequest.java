@@ -1,6 +1,5 @@
-package de.ftracker.services.pots;
+package de.ftracker.services.DTOs;
 
-import de.ftracker.domain.model.potsDTOs.BudgetPot;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;

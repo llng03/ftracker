@@ -1,4 +1,4 @@
-package de.ftracker.services.pots;
+package de.ftracker.services.DTOs;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -13,5 +13,6 @@ public class UpdateCostRequest {
     private Long costId;
 
     private String descr;
+
     private BigDecimal amount;
 }

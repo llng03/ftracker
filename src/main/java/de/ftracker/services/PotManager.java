@@ -1,6 +1,8 @@
-package de.ftracker.services.pots;
+package de.ftracker.services;
 
+import de.ftracker.domain.model.costDTOs.Cost;
 import de.ftracker.domain.model.potsDTOs.BudgetPot;
+import de.ftracker.domain.model.potsDTOs.PotEntry;
 import de.ftracker.domain.model.potsDTOs.PotForRegularExp;
 import de.ftracker.domain.model.potsDTOs.UndistributedPotAmount;
 import jakarta.transaction.Transactional;
@@ -21,7 +23,7 @@ public class PotManager {
     private final PotRepository potRepository;
     private final PotSummaryRepository potSummaryRepository;
 
-    private final UndistributedPotAmount potSummary;
+    private UndistributedPotAmount potSummary;
 
     public PotManager(PotRepository potRepository, PotSummaryRepository potSummaryRepository){
         this.potRepository = potRepository;
@@ -74,7 +76,15 @@ public class PotManager {
     }
 
     public void addEntry(BudgetPot pot, LocalDate date, BigDecimal amount) {
-        pot.addEntry(LocalDate.now(), amount);
+        pot.addEntry(date, amount);
+        potRepository.save(pot);
+    }
+
+    public void addEntry(BudgetPot pot, LocalDate date, BigDecimal amount, Cost cost) {
+        pot.addEntry(date, amount, cost);
+    }
+
+    public void saveInRepo(BudgetPot pot) {
         potRepository.save(pot);
     }
 
@@ -126,5 +136,61 @@ public class PotManager {
 
     public Optional<BudgetPot> getPotById(Long potId) {
         return potRepository.findById(potId);
+    }
+
+    public void deleteEntry(BudgetPot pot, PotEntry entry) {
+        pot.removeEntry(entry);
+        potRepository.save(pot);
+    }
+
+    public BudgetPot findPotById(Long potId) {
+        return potRepository.findById(potId).orElseThrow( ()->
+                new IllegalArgumentException("No pot found with id " + potId));
+    }
+
+    public void deletePotEntryWithCostId(Cost cost) {
+        this.potSummary = potSummaryRepository.findById(1L).orElseThrow();
+        boolean removed = potSummary.getAssociatedExpenses().removeIf(e -> Objects.equals(e.getId(), cost.getId()));
+        if(removed) {
+            potSummary.setUndistributed(potSummary.getUndistributed().subtract(cost.getAmount()));
+        }
+        potSummaryRepository.saveAndFlush(potSummary);
+
+        Optional<BudgetPot> budPot = potRepository.findAll()
+                .stream()
+                .filter(pot -> findEntryWithCostId(cost, pot).isPresent())
+                .findAny();
+        if(budPot.isPresent()) {
+            BudgetPot pot = budPot.get();
+            Optional<PotEntry> entry = findEntryWithCostId(cost, pot);
+            entry.ifPresent(potEntry -> budPot.get().removeEntry(potEntry));
+            potRepository.save(pot);
+        }
+        potSummary.getAssociatedExpenses().forEach(e -> System.out.println(e.getId() + e.getDescr()));
+        System.out.println("[]");
+        potSummaryRepository.getReferenceById(1L).getAssociatedExpenses().forEach(e -> System.out.println(e.getId() + e.getDescr()));
+        System.out.println("REACHED END OF DELETE");
+    }
+
+    public Optional<PotEntry> findEntryWithCostId(Cost cost, BudgetPot pot) {
+        Optional<PotEntry> entryOpt = pot.getEntries()
+                .stream()
+                .filter(e -> e.getCost() != null && Objects.equals(e.getCost().getId(), cost.getId()))
+                .findAny();
+        if(entryOpt.isPresent()) {
+            System.out.println("FOUND ASS ENTRY --");
+            System.out.println(entryOpt.get().toString());
+        }
+        return entryOpt;
+
+    }
+
+    public List<Long> getExpenseIdsRaw() {
+        return potSummaryRepository.findAssociatedExpenseIdsRaw();
+    }
+
+    public void addCostToUndistributed(Cost cost) {
+        potSummary.addAssociatedExpense(cost);
+        potSummaryRepository.save(potSummary);
     }
 }

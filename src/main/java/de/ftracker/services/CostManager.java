@@ -6,10 +6,12 @@ import de.ftracker.domain.model.costDTOs.FixedCost;
 import de.ftracker.domain.model.costDTOs.FixedCostForm;
 import de.ftracker.domain.model.costDTOs.Interval;
 import de.ftracker.domain.model.potsDTOs.BudgetPot;
+import de.ftracker.domain.model.potsDTOs.PotEntry;
+import de.ftracker.domain.model.potsDTOs.UndistributedPotAmount;
 import de.ftracker.domain.services.CostAggregationService;
-import de.ftracker.services.pots.PotManager;
-import de.ftracker.services.pots.UpdateCostRequest;
-import de.ftracker.services.pots.UpdateFixedCostRequest;
+import de.ftracker.services.DTOs.DeleteEntryRequest;
+import de.ftracker.services.DTOs.UpdateCostRequest;
+import de.ftracker.services.DTOs.UpdateFixedCostRequest;
 import de.ftracker.utils.MonthlySums;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,15 +25,21 @@ import java.util.stream.Collectors;
 
 @Service
 public class CostManager {
+    private final CostRepository costRepository;
     private final CostTablesRepository costTablesRepository;
     private final FixedCostsRepository fixedCostsRepository;
     private final CostAggregationService costAggregationService;
+    private final PotSummaryRepository potSummaryRepository;
 
     @Autowired
-    public CostManager(CostTablesRepository costTablesRepository, FixedCostsRepository fixedCostsRepository) {
+    public CostManager(CostTablesRepository costTablesRepository,
+                       FixedCostsRepository fixedCostsRepository,
+                       CostRepository costRepository, PotSummaryRepository potSummaryRepository) {
         this.costTablesRepository = costTablesRepository;
         this.fixedCostsRepository = fixedCostsRepository;
         this.costAggregationService = new CostAggregationService();
+        this.costRepository = costRepository;
+        this.potSummaryRepository = potSummaryRepository;
     }
     /*
     getIncome: the whole income table
@@ -198,14 +206,39 @@ public class CostManager {
         fixedCostsRepository.deleteById(id);
     }
 
-    public void deleteFromCosts(Long id, int year, int month) {
+    @Transactional
+    public void deleteFromCosts(Long id, int year, int month, PotManager potManager) {
+        System.out.println("deleteFromCosts entered");
+
         CostTables table = costTablesRepository.customFind(year, month)
                 .orElseThrow(() -> new IllegalArgumentException(
                 "No CostTable found for " + year + "-" + month
         ));
-        table.getIncomes().removeIf(e -> e.getId().equals(id));
-        table.getExpenses().removeIf(e -> e.getId().equals(id));
+
+        Cost cost = table.getIncomes().stream().filter(e -> e.getId().equals(id)).findFirst()
+                        .orElse(table.getExpenses().stream().filter(e -> e.getId().equals(id)).findFirst()
+                                .orElseThrow(() -> new IllegalArgumentException("Found no Cost with id " + id)));
+
+
+        System.out.println("A: start");
+
+        potManager.deletePotEntryWithCostId(cost);
+        System.out.println("B: after deletePotEntryWithCostId");
+        potManager.getExpenseIdsRaw().forEach(System.out::println);
+
+        table.deleteCostById(cost.getId());
+        System.out.println("C: after table.deleteCostById");
+
+        System.out.println("C1 expenses contains id? " +
+                table.getExpenses().stream().anyMatch(c -> Objects.equals(c.getId(), cost.getId()))
+        );
+
         costTablesRepository.save(table);
+        System.out.println("D: after saveAndFlush(table)");
+
+        costRepository.deleteById(cost.getId());
+        System.out.println("E: after deleteById(cost)");
+
     }
 
     // - - POTS - -
@@ -232,11 +265,21 @@ public class CostManager {
         Optional<BudgetPot> pot = potManager.getPotById(potId);
         if(pot.isPresent()) {
             BudgetPot actualPot = pot.get();
-            tables.addCostToExpenses("in Pot " + actualPot.getName() + " gelegt", amount);
-            potManager.addEntry(actualPot, LocalDate.now(), amount);
+            Cost cost = new Cost("in Pot " + actualPot.getName() + " gelegt", amount, false);
+            potManager.addEntry(actualPot, LocalDate.now(), amount, cost);
+            costRepository.save(cost);
+            tables.addCostToExpenses(cost);
+            costTablesRepository.save(tables);
+            potManager.saveInRepo(actualPot);
+            System.out.println("NEW ENTRY - - ");
+            actualPot.getEntries().forEach( e -> System.out.println(e.getCost().getId()));
         } else {
-            tables.addCostToExpenses("auf Pots zu Verteilen", amount);
+            Cost cost = new Cost("auf Pots zu Verteilen", amount, false);
+            tables.addCostToExpenses(cost);
+            costRepository.save(cost);
+            costTablesRepository.save(tables);
             potManager.addToUndistributed(amount);
+            potManager.addCostToUndistributed(cost);
         }
     }
 
@@ -271,5 +314,28 @@ public class CostManager {
 
 
         fixedCostsRepository.save(fCost);
+    }
+    @Transactional
+    public void deletePotEntry(DeleteEntryRequest deleteEntryRequest, PotManager potManager) {
+        BudgetPot pot = potManager.findPotById(deleteEntryRequest.getPotId());
+        PotEntry entry = pot.getEntryById(deleteEntryRequest.getEntryId());
+
+        deleteAssociatedCostIfPresent(potManager, entry);
+        potManager.deleteEntry(pot, entry);
+        System.out.println("DEBUG - - " + entry.getCost().getId());
+    }
+
+    public void deleteAssociatedCostIfPresent(PotManager potManager, PotEntry entry) {
+        Cost cost = entry.getCost();
+        if(cost == null) {
+            return;
+        }
+
+        CostTables tables = costTablesRepository.findByMonthAndYear(
+                entry.getDate().getYear(), entry.getDate().getMonthValue())
+                .orElseThrow( () -> new IllegalArgumentException(
+                        "No Tables found from " + entry.getDate().getYear() + "-" + entry.getDate().getMonth()));
+        tables.deleteCostById(cost.getId());
+        costTablesRepository.save(tables);
     }
 }

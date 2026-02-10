@@ -1,9 +1,12 @@
 package de.ftracker.controller;
 
 import de.ftracker.domain.model.potsDTOs.BudgetPot;
-import de.ftracker.services.pots.*;
+import de.ftracker.services.DTOs.DistributeRequest;
+import de.ftracker.services.DTOs.PotOverviewDTO;
+import de.ftracker.services.DTOs.TakeMoneyFromPotRequest;
+import de.ftracker.services.PotManager;
+import de.ftracker.services.PotOverviewDTOService;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
