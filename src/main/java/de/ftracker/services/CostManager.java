@@ -332,9 +332,9 @@ public class CostManager {
         }
 
         CostTables tables = costTablesRepository.findByMonthAndYear(
-                entry.getDate().getYear(), entry.getDate().getMonthValue())
+                entry.getDate().getMonthValue(), entry.getDate().getYear())
                 .orElseThrow( () -> new IllegalArgumentException(
-                        "No Tables found from " + entry.getDate().getYear() + "-" + entry.getDate().getMonth()));
+                        "No Tables found from " + entry.getDate().getYear() + "-" + entry.getDate().getMonthValue()));
         tables.deleteCostById(cost.getId());
         costTablesRepository.save(tables);
     }
