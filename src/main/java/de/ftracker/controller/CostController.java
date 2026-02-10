@@ -73,7 +73,7 @@ public class CostController {
     @PatchMapping("/updateCost")
     public ResponseEntity<Void> updateCost(@RequestBody UpdateCostRequest updateCostRequest,
                                            @RequestParam int year, @RequestParam int month) {
-        costManager.updateCost(updateCostRequest, year, month);
+        costManager.updateCost(updateCostRequest, year, month, potManager);
         return ResponseEntity.ok().build();
     }
 

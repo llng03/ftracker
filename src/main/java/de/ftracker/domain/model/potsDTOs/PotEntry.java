@@ -4,12 +4,14 @@ import de.ftracker.domain.model.costDTOs.Cost;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
 
 @Getter
+@Setter
 @Entity
 public class PotEntry {
     @Id

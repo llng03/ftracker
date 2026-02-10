@@ -29,7 +29,6 @@ public class CostManager {
     private final CostTablesRepository costTablesRepository;
     private final FixedCostsRepository fixedCostsRepository;
     private final CostAggregationService costAggregationService;
-    private final PotSummaryRepository potSummaryRepository;
 
     @Autowired
     public CostManager(CostTablesRepository costTablesRepository,
@@ -39,7 +38,6 @@ public class CostManager {
         this.fixedCostsRepository = fixedCostsRepository;
         this.costAggregationService = new CostAggregationService();
         this.costRepository = costRepository;
-        this.potSummaryRepository = potSummaryRepository;
     }
     /*
     getIncome: the whole income table
@@ -283,13 +281,14 @@ public class CostManager {
         }
     }
 
-    public void updateCost(UpdateCostRequest updateCostRequest, int year, int month) {
+    public void updateCost(UpdateCostRequest updateCostRequest, int year, int month, PotManager potManager) {
         CostTables tables = costTablesRepository.findByMonthAndYear(month,year).orElseThrow( () ->
                 new IllegalArgumentException("Found no tables for " +  year + "-" + month));
         Cost cost = tables.findCostById(updateCostRequest.getCostId()).orElseThrow(() ->
                 new IllegalArgumentException("Found no cost with id " + updateCostRequest.getCostId()));
         cost.setDescr(updateCostRequest.getDescr());
         cost.setAmount(updateCostRequest.getAmount());
+        potManager.updateAssociatedPotEntry(updateCostRequest.getCostId(), updateCostRequest.getAmount());
         costTablesRepository.save(tables);
     }
 

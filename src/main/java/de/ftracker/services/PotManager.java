@@ -156,13 +156,10 @@ public class PotManager {
         }
         potSummaryRepository.saveAndFlush(potSummary);
 
-        Optional<BudgetPot> budPot = potRepository.findAll()
-                .stream()
-                .filter(pot -> findEntryWithCostId(cost, pot).isPresent())
-                .findAny();
+        Optional<BudgetPot> budPot = findPotWithEntryWithCostId(cost.getId());
         if(budPot.isPresent()) {
             BudgetPot pot = budPot.get();
-            Optional<PotEntry> entry = findEntryWithCostId(cost, pot);
+            Optional<PotEntry> entry = findEntryWithCostId(cost.getId(), pot);
             entry.ifPresent(potEntry -> budPot.get().removeEntry(potEntry));
             potRepository.save(pot);
         }
@@ -171,11 +168,17 @@ public class PotManager {
         potSummaryRepository.getReferenceById(1L).getAssociatedExpenses().forEach(e -> System.out.println(e.getId() + e.getDescr()));
         System.out.println("REACHED END OF DELETE");
     }
+    public Optional<BudgetPot> findPotWithEntryWithCostId(Long costId) {
+        return potRepository.findAll()
+                .stream()
+                .filter(pot -> findEntryWithCostId(costId, pot).isPresent())
+                .findAny();
+    }
 
-    public Optional<PotEntry> findEntryWithCostId(Cost cost, BudgetPot pot) {
+    public Optional<PotEntry> findEntryWithCostId(Long costId, BudgetPot pot) {
         Optional<PotEntry> entryOpt = pot.getEntries()
                 .stream()
-                .filter(e -> e.getCost() != null && Objects.equals(e.getCost().getId(), cost.getId()))
+                .filter(e -> e.getCost() != null && Objects.equals(e.getCost().getId(), costId))
                 .findAny();
         if(entryOpt.isPresent()) {
             System.out.println("FOUND ASS ENTRY --");
@@ -192,5 +195,15 @@ public class PotManager {
     public void addCostToUndistributed(Cost cost) {
         potSummary.addAssociatedExpense(cost);
         potSummaryRepository.save(potSummary);
+    }
+
+    public void updateAssociatedPotEntry(Long costId, BigDecimal amount) {
+        Optional<BudgetPot> budPot = findPotWithEntryWithCostId(costId);
+        if(budPot.isPresent()) {
+            BudgetPot pot = budPot.get();
+            Optional<PotEntry> entry = findEntryWithCostId(costId, pot);
+            entry.ifPresent(potEntry -> potEntry.setAmount(amount));
+            potRepository.save(pot);
+        }
     }
 }
