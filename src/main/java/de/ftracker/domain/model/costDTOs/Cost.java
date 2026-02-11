@@ -1,6 +1,8 @@
 package de.ftracker.domain.model.costDTOs;
 
 
+import de.ftracker.domain.model.CostTables;
+import de.ftracker.domain.model.potsDTOs.PotEntry;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;

@@ -1,5 +1,7 @@
 package de.ftracker.utils;
 
+import java.time.YearMonth;
+
 public class MonthNavigation {
     public final int currYear;
     public final int currMonth;
@@ -15,7 +17,10 @@ public class MonthNavigation {
         this.nextMonth = computeNextMonth(currMonth);
         this.prevMonthsYear = computePrevMonthsYear(currYear, currMonth);
         this.prevMonth = computePrevMonth(currMonth);
+    }
 
+    public MonthNavigation(YearMonth currYearMonth) {
+        this(currYearMonth.getYear(), currYearMonth.getMonthValue());
     }
 
     private int computeNextMonthsYear(int currYear, int currMonth) {
@@ -32,5 +37,19 @@ public class MonthNavigation {
 
     private int computePrevMonth(int currMonth) {
         return (currMonth == 1 ? 12 : currMonth-1);
+    }
+
+    public YearMonth getPrevYearMonth() {
+        return YearMonth.of(
+                prevMonthsYear,
+                prevMonth
+        );
+    }
+
+    public YearMonth getNextYearMonth() {
+        return YearMonth.of(
+                nextMonthsYear,
+                nextMonth
+        );
     }
 }

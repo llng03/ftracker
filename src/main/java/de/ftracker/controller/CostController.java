@@ -3,14 +3,19 @@ package de.ftracker.controller;
 import de.ftracker.domain.model.costDTOs.Cost;
 import de.ftracker.domain.model.costDTOs.FixedCostForm;
 import de.ftracker.services.CostManager;
-import de.ftracker.services.MonthOverviewDTO;
+import de.ftracker.services.DTOs.DeleteEntryRequest;
+import de.ftracker.services.DTOs.DistributeRequest;
+import de.ftracker.services.DTOs.UpdateCostRequest;
+import de.ftracker.services.DTOs.UpdateFixedCostRequest;
+import de.ftracker.services.DTOs.MonthOverviewDTO;
 import de.ftracker.services.MonthOverviewService;
-import de.ftracker.services.pots.DistributeRequest;
-import de.ftracker.services.pots.PotManager;
+import de.ftracker.services.PotManager;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.YearMonth;
 
 @RestController
 @RequestMapping("/api/costs")
@@ -64,6 +69,46 @@ public class CostController {
                 distributeRequest.getAmount(),
                 distributeRequest.getPotId()
         );
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/changeFixedCost")
+    public ResponseEntity<Void> changeFixedCost(@RequestBody UpdateFixedCostRequest updateFixedCostRequest,
+                                                @RequestParam YearMonth changeMonth) {
+        costManager.changeFixedCost(updateFixedCostRequest, changeMonth);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/updateCost")
+    public ResponseEntity<Void> updateCost(@RequestBody UpdateCostRequest updateCostRequest,
+                                           @RequestParam int year, @RequestParam int month) {
+        costManager.updateCost(updateCostRequest, year, month, potManager);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/updateFixedCost")
+    public ResponseEntity<Void> updateFixedCost(@RequestBody UpdateFixedCostRequest updateFixedCostRequest) {
+        costManager.updateFixedCost(updateFixedCostRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/deleteFixedCost")
+    public ResponseEntity<Void> removeFixedCost(@RequestParam Long costId) {
+        costManager.deleteFromFixedCosts(costId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/deleteCost")
+    public ResponseEntity<Void> removeCost(@RequestParam Long costId, @RequestParam int year, @RequestParam int month) {
+        System.out.println("REMVOE COST");
+        System.out.println(costId);
+        costManager.deleteFromCosts(costId, year, month, potManager);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/deletePotEntry")
+    public ResponseEntity<Void> deletePotEntry(@RequestBody DeleteEntryRequest deleteEntryRequest) {
+        costManager.deletePotEntry(deleteEntryRequest, potManager);
         return ResponseEntity.ok().build();
     }
 

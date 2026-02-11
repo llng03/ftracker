@@ -1,5 +1,6 @@
 package de.ftracker.services;
 
+import de.ftracker.services.DTOs.MonthOverviewDTO;
 import de.ftracker.utils.MonthNavigation;
 import de.ftracker.utils.MonthlySums;
 import org.springframework.beans.factory.annotation.Autowired;

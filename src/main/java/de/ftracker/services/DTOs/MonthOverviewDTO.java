@@ -1,4 +1,4 @@
-package de.ftracker.services;
+package de.ftracker.services.DTOs;
 
 import de.ftracker.domain.model.costDTOs.Cost;
 import de.ftracker.domain.model.costDTOs.FixedCost;

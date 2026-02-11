@@ -1,6 +1,8 @@
 package de.ftracker.domain.model.potsDTOs;
 
+import de.ftracker.domain.model.costDTOs.Cost;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import org.hibernate.validator.constraints.UniqueElements;
 
@@ -33,23 +35,29 @@ public class BudgetPot {
 
     public BigDecimal sum() {
         return entries.stream()
-                .map(e -> e.getAmount())
+                .map(PotEntry::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public List<PotEntry> getEntries() {
-        return entries;
     }
 
     public void addEntry(LocalDate date, BigDecimal amount) {
         entries.add(new PotEntry(date, amount));
     }
 
+    public void addEntry(LocalDate date, BigDecimal amount, Cost cost) {
+        entries.add(new PotEntry(date, amount, cost));
+    }
+
     public void pay(LocalDate date, BigDecimal amount) {
         addEntry(LocalDate.now(), amount.negate());
+    }
+
+    public void removeEntry(PotEntry potEntry) {
+        entries.remove(potEntry);
+    }
+
+    public PotEntry getEntryById(Long entryId) {
+        return entries.stream().filter(e -> e.getId().equals(entryId)).findFirst().orElseThrow(
+                () -> new IllegalArgumentException("No such entry")
+        );
     }
 }
