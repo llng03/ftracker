@@ -89,6 +89,7 @@ public class PotManager {
     }
 
     public void addToUndistributed(BigDecimal amount) {
+        this.potSummary = potSummaryRepository.findById(1L).orElseThrow();
         potSummary.addToUndistributed(amount);
         potSummaryRepository.save(potSummary);
     }

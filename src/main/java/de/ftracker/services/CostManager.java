@@ -276,8 +276,8 @@ public class CostManager {
         } else {
             Cost cost = new Cost("auf Pots zu Verteilen", amount, false);
             tables.addCostToExpenses(cost);
-            costRepository.save(cost);
-            costTablesRepository.save(tables);
+            costRepository.saveAndFlush(cost);
+            costTablesRepository.saveAndFlush(tables);
             potManager.addToUndistributed(amount);
             potManager.addCostToUndistributed(cost);
         }
@@ -323,7 +323,6 @@ public class CostManager {
 
         deleteAssociatedCostIfPresent(potManager, entry);
         potManager.deleteEntry(pot, entry);
-        System.out.println("DEBUG - - " + entry.getCost().getId());
     }
 
     public void deleteAssociatedCostIfPresent(PotManager potManager, PotEntry entry) {
