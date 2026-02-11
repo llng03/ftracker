@@ -21,6 +21,19 @@ public class CostAggregationService {
                 .collect(Collectors.toList());
     }
 
+    public List<FixedCost> getPastFixedCosts(List<FixedCost> fixedCosts, YearMonth month) {
+        return fixedCosts.stream()
+                .filter(fc -> fc.getEnd().isPresent())
+                .filter(fc -> fc.getEnd().get().isBefore(month))
+                .collect(Collectors.toList());
+    }
+
+    public List<FixedCost> getFutureFixedCosts(List<FixedCost> fixedCosts, YearMonth month) {
+        return fixedCosts.stream()
+                .filter(fc -> fc.getStart().isAfter(month))
+                .collect(Collectors.toList());
+    }
+
     public MonthlySums calculateMonthlySums(List<Cost> income, List<Cost> exp) {
         BigDecimal incomeSum = sum(income);
         BigDecimal expSum = sum(exp);
@@ -51,6 +64,6 @@ public class CostAggregationService {
 
     private boolean appliesTo(FixedCost cost, YearMonth month) {
         return !cost.getStart().isAfter(month)
-                && cost.getEnd().map(end -> !end.isBefore(month)).orElse(true);
+                && ((cost.getEnd().isEmpty()) || (!cost.getEnd().get().isBefore(month)));
     }
 }

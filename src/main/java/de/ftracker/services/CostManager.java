@@ -79,7 +79,7 @@ public class CostManager {
 
     public List<FixedCost> getFixedIncome() {
         return fixedCostsRepository.findAll().stream()
-                .filter(c -> c.getIsIncome())
+                .filter(Cost::getIsIncome)
                 .collect(Collectors.toList());
     }
 

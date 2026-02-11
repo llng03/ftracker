@@ -3,11 +3,8 @@ package de.ftracker.controller;
 import de.ftracker.domain.model.costDTOs.Cost;
 import de.ftracker.domain.model.costDTOs.FixedCostForm;
 import de.ftracker.services.CostManager;
-import de.ftracker.services.DTOs.DeleteEntryRequest;
-import de.ftracker.services.DTOs.DistributeRequest;
-import de.ftracker.services.DTOs.UpdateCostRequest;
-import de.ftracker.services.DTOs.UpdateFixedCostRequest;
-import de.ftracker.services.DTOs.MonthOverviewDTO;
+import de.ftracker.services.DTOs.*;
+import de.ftracker.services.FixedCostOverviewDTOService;
 import de.ftracker.services.MonthOverviewService;
 import de.ftracker.services.PotManager;
 import jakarta.validation.Valid;
@@ -24,17 +21,24 @@ public class CostController {
     private final CostManager costManager;
     private final PotManager potManager;
     private final MonthOverviewService monthOverviewService;
+    private final FixedCostOverviewDTOService fixedCostOverviewDTOService;
 
     @Autowired
     public CostController(CostManager costManager, PotManager potManager) {
         this.costManager = costManager;
         this.potManager = potManager;
         this.monthOverviewService = new MonthOverviewService(costManager);
+        this.fixedCostOverviewDTOService = new FixedCostOverviewDTOService(costManager);
     }
 
     @GetMapping
     public MonthOverviewDTO getMonthOverview(@RequestParam int year, @RequestParam int month) {
         return monthOverviewService.getMonthOverviewDTO(year, month);
+    }
+
+    @GetMapping("/fixedCosts")
+    public FixedCostOverviewDTO getFixedCosts(@RequestParam int year, @RequestParam int month) {
+        return fixedCostOverviewDTOService.getFixedCostOverviewDTO(year, month);
     }
 
     @PostMapping("/fixedCost")
