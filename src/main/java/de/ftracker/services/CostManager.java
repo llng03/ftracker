@@ -12,7 +12,9 @@ import de.ftracker.domain.services.CostAggregationService;
 import de.ftracker.services.DTOs.DeleteEntryRequest;
 import de.ftracker.services.DTOs.UpdateCostRequest;
 import de.ftracker.services.DTOs.UpdateFixedCostRequest;
+import de.ftracker.utils.MonthNavigation;
 import de.ftracker.utils.MonthlySums;
+import org.hibernate.sql.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -301,14 +303,14 @@ public class CostManager {
         fCost.setDescr(updateFixedCostRequest.getDescr());
         fCost.setAmount(updateFixedCostRequest.getAmount());
         fCost.setFrequency(updateFixedCostRequest.getFrequency());
-        fCost.setStartMonth(updateFixedCostRequest.getStartMonth().getMonth().getValue());
-        fCost.setStartYear(updateFixedCostRequest.getStartMonth().getYear());
-        if(updateFixedCostRequest.getEndMonth() == null) {
+        fCost.setStartMonth(updateFixedCostRequest.getStart().getMonth().getValue());
+        fCost.setStartYear(updateFixedCostRequest.getStart().getYear());
+        if(updateFixedCostRequest.getEnd() == null) {
             fCost.setEndMonth(null);
             fCost.setEndYear(null);
         } else {
-            fCost.setEndMonth(updateFixedCostRequest.getEndMonth().getMonth().getValue());
-            fCost.setEndYear(updateFixedCostRequest.getEndMonth().getYear());
+            fCost.setEndMonth(updateFixedCostRequest.getEnd().getMonth().getValue());
+            fCost.setEndYear(updateFixedCostRequest.getEnd().getYear());
         }
 
 
@@ -336,5 +338,46 @@ public class CostManager {
                         "No Tables found from " + entry.getDate().getYear() + "-" + entry.getDate().getMonthValue()));
         tables.deleteCostById(cost.getId());
         costTablesRepository.save(tables);
+    }
+
+    public void changeFixedCost(UpdateFixedCostRequest updateFixedCostRequest, YearMonth changeMonth) {
+        //set endmonth of old fixedcost of month before changeMonth
+        FixedCost oldFixedCost = fixedCostsRepository.findById(updateFixedCostRequest.getCostId())
+                .orElseThrow(() -> new IllegalArgumentException("did not find id"));
+        UpdateFixedCostRequest updateOldFixedCostRequest = createRequestForEndingFixedCost(
+                oldFixedCost, changeMonth);
+        updateFixedCost(updateOldFixedCostRequest);
+
+        //create new fixed costs with new data and start month before changeMonth
+        FixedCost newFixedCost = new FixedCost(
+              updateFixedCostRequest.getDescr(),
+              updateFixedCostRequest.getAmount(),
+              oldFixedCost.getIsIncome(),
+              updateFixedCostRequest.getFrequency(),
+              changeMonth,
+              updateFixedCostRequest.getEnd()
+        );
+        if(newFixedCost.getIsIncome()) {
+            addToFixedIncome(newFixedCost);
+        } else {
+            addToFixedExp(newFixedCost);
+        }
+        fixedCostsRepository.save(newFixedCost);
+    }
+
+    private UpdateFixedCostRequest createRequestForEndingFixedCost(
+            FixedCost oldFixedCost,
+            YearMonth changeMonth) {
+        UpdateFixedCostRequest updateOldFixedCostRequest = new UpdateFixedCostRequest();
+        updateOldFixedCostRequest.setCostId(oldFixedCost.getId());
+        updateOldFixedCostRequest.setDescr(oldFixedCost.getDescr());
+        updateOldFixedCostRequest.setAmount(oldFixedCost.getAmount());
+        updateOldFixedCostRequest.setFrequency(oldFixedCost.getFrequency());
+        updateOldFixedCostRequest.setStart(oldFixedCost.getStart());
+
+        updateOldFixedCostRequest.setEnd(
+                new MonthNavigation(changeMonth).getPrevYearMonth()
+        );
+        return updateOldFixedCostRequest;
     }
 }

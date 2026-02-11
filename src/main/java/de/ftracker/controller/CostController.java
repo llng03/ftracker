@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.YearMonth;
+
 @RestController
 @RequestMapping("/api/costs")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -67,6 +69,13 @@ public class CostController {
                 distributeRequest.getAmount(),
                 distributeRequest.getPotId()
         );
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/changeFixedCost")
+    public ResponseEntity<Void> changeFixedCost(@RequestBody UpdateFixedCostRequest updateFixedCostRequest,
+                                                @RequestParam YearMonth changeMonth) {
+        costManager.changeFixedCost(updateFixedCostRequest, changeMonth);
         return ResponseEntity.ok().build();
     }
 

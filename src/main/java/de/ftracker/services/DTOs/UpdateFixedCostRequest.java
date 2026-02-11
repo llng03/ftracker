@@ -18,8 +18,8 @@ public class UpdateFixedCostRequest {
     private BigDecimal amount;
     private Interval frequency;
 
-    private YearMonth startMonth;
+    private YearMonth start;
 
-    private YearMonth endMonth;
+    private YearMonth end;
 
 }
