@@ -26,8 +26,8 @@ public class FixedCostOverviewDTOService {
 
         CostAggregationService costAggregationService = new CostAggregationService();
         FixedCostOverviewDTO dto = new FixedCostOverviewDTO();
-        dto.setCurrentFixedIncome(costAggregationService.getApplicableFixedCosts(allFixedIncome, currYM));
-        dto.setCurrentFixedExpense(costAggregationService.getApplicableFixedCosts(allFixedExp, currYM));
+        dto.setCurrentFixedIncome(costAggregationService.getPresentFixedCosts(allFixedIncome, currYM));
+        dto.setCurrentFixedExpense(costAggregationService.getPresentFixedCosts(allFixedExp, currYM));
 
         dto.setFutureFixedIncome(costAggregationService.getFutureFixedCosts(allFixedIncome, currYM));
         dto.setFutureFixedExpense(costAggregationService.getFutureFixedCosts(allFixedExp, currYM));

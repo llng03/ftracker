@@ -42,7 +42,7 @@ public class CostController {
     }
 
     @PostMapping("/fixedCost")
-    public ResponseEntity<Void> addFixedIncome(@Valid @RequestBody FixedCostForm fixedCost) {
+    public ResponseEntity<Void> addFixedCost(@Valid @RequestBody FixedCostForm fixedCost) {
         if(fixedCost.getIsIncome()) {
             costManager.addToFixedIncome(fixedCost);
         } else {

@@ -4,6 +4,7 @@ import de.ftracker.domain.model.CostTables;
 import de.ftracker.domain.model.costDTOs.Cost;
 import de.ftracker.domain.model.costDTOs.FixedCost;
 import de.ftracker.domain.model.costDTOs.FixedCostForm;
+import de.ftracker.domain.model.costDTOs.Interval;
 import de.ftracker.utils.IntervalCount;
 import de.ftracker.utils.MonthlySums;
 
@@ -16,6 +17,26 @@ import java.util.stream.Collectors;
 
 public class CostAggregationService {
     public List<FixedCost> getApplicableFixedCosts(List<FixedCost> fixedCosts, YearMonth month) {
+         return getPresentFixedCosts(fixedCosts, month)
+                 .stream()
+                 .map( fCost -> {
+                    if(fCost.getFrequency() != Interval.MONTHLY) {
+                        return new FixedCost(
+                                fCost.getId(),
+                                fCost.getDescr(),
+                                getMonthlyAmount(fCost),
+                                fCost.getIsIncome(),
+                                Interval.MONTHLY,
+                                fCost.getStart(),
+                                fCost.getEnd().isPresent() ? fCost.getEnd().get() : null
+                        );
+                    } else {
+                        return fCost;
+                    }
+                }
+                ).toList();
+    }
+    public List<FixedCost> getPresentFixedCosts(List<FixedCost> fixedCosts, YearMonth month) {
         return fixedCosts.stream()
                 .filter(fc -> appliesTo(fc, month))
                 .collect(Collectors.toList());

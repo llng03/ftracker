@@ -192,13 +192,20 @@ public class CostManager {
     }
 
     public void addToFixedExp(FixedCost exp) {
-        if(exp.getFrequency() == Interval.MONTHLY) {
+        fixedCostsRepository.save(exp);
+        /*if(exp.getFrequency() == Interval.MONTHLY) {
             fixedCostsRepository.save(exp);
         } else {
             fixedCostsRepository.save(
-                    new FixedCost(exp.getDescr(), costAggregationService.getMonthlyAmount(exp), false, Interval.MONTHLY, exp.getStart(), exp.getEndValue())
+                new FixedCost(exp.getDescr(),
+                        costAggregationService.getMonthlyAmount(exp),
+                        false,
+                        Interval.MONTHLY,
+                        exp.getStart(),
+                        exp.getEndValue()
+                )
             );
-        }
+        }*/
     }
 
     // - - DELETE - -
