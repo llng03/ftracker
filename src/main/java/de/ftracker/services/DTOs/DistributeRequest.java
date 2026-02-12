@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class DistributeRequest {
-    private long potId;
+    private Long potId;
 
     @NotNull
     private BigDecimal amount;

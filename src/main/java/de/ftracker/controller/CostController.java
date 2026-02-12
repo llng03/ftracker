@@ -104,8 +104,6 @@ public class CostController {
 
     @DeleteMapping("/deleteCost")
     public ResponseEntity<Void> removeCost(@RequestParam Long costId, @RequestParam int year, @RequestParam int month) {
-        System.out.println("REMVOE COST");
-        System.out.println(costId);
         costManager.deleteFromCosts(costId, year, month, potManager);
         return ResponseEntity.ok().build();
     }

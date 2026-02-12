@@ -208,36 +208,39 @@ public class CostManager {
 
     @Transactional
     public void deleteFromCosts(Long id, int year, int month, PotManager potManager) {
-        System.out.println("deleteFromCosts entered");
+        System.out.println("DELETE requested id=" + id);
 
         CostTables table = costTablesRepository.customFind(year, month)
                 .orElseThrow(() -> new IllegalArgumentException(
                 "No CostTable found for " + year + "-" + month
         ));
 
-        Cost cost = table.getIncomes().stream().filter(e -> e.getId().equals(id)).findFirst()
-                        .orElse(table.getExpenses().stream().filter(e -> e.getId().equals(id)).findFirst()
-                                .orElseThrow(() -> new IllegalArgumentException("Found no Cost with id " + id)));
+        System.out.println("Income");
+        table.getIncomes().forEach(c -> System.out.println(c.getId() + " " + c.getDescr() + " class=" + c.getClass()));
+        System.out.println("Expenses");
+        table.getExpenses().forEach(c -> System.out.println(c.getId() + " " + c.getDescr()));
 
+        boolean incomePresent = table.getIncomes().stream().anyMatch(e -> e.getId().equals(id));
+        boolean expensePresent = table.getExpenses().stream().anyMatch(e -> e.getId().equals(id));
 
-        System.out.println("A: start");
+        System.out.println("incomePresent: " + incomePresent + " expensePresent: " + expensePresent);
+
+        Cost cost = table.getIncomes().stream()
+                .filter(e -> e.getId().equals(id))
+                .findFirst()
+                .orElseGet(() -> table.getExpenses().stream()
+                        .filter(e -> e.getId().equals(id))
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalArgumentException("Found no Cost with id " + id)));
 
         potManager.deletePotEntryWithCostId(cost);
-        System.out.println("B: after deletePotEntryWithCostId");
         potManager.getExpenseIdsRaw().forEach(System.out::println);
 
         table.deleteCostById(cost.getId());
-        System.out.println("C: after table.deleteCostById");
-
-        System.out.println("C1 expenses contains id? " +
-                table.getExpenses().stream().anyMatch(c -> Objects.equals(c.getId(), cost.getId()))
-        );
 
         costTablesRepository.save(table);
-        System.out.println("D: after saveAndFlush(table)");
 
         costRepository.deleteById(cost.getId());
-        System.out.println("E: after deleteById(cost)");
 
     }
 
