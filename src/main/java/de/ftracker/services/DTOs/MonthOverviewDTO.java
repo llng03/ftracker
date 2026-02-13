@@ -18,8 +18,8 @@ public class MonthOverviewDTO {
     private List<Cost> monthsIncome;
     private List<Cost> monthsExpense;
 
-    private List<FixedCost> monthsFixedIncome;
-    private List<FixedCost> monthsFixedExpense;
+    private List<Cost> monthsFixedIncome;
+    private List<Cost> monthsFixedExpense;
 
     private List<FixedCost> fixedIncome;
     private List<FixedCost> fixedExpense;

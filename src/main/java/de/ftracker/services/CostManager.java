@@ -7,14 +7,13 @@ import de.ftracker.domain.model.costDTOs.FixedCostForm;
 import de.ftracker.domain.model.costDTOs.Interval;
 import de.ftracker.domain.model.potsDTOs.BudgetPot;
 import de.ftracker.domain.model.potsDTOs.PotEntry;
-import de.ftracker.domain.model.potsDTOs.UndistributedPotAmount;
+import de.ftracker.domain.model.potsDTOs.PotForRegularExp;
 import de.ftracker.domain.services.CostAggregationService;
 import de.ftracker.services.DTOs.DeleteEntryRequest;
 import de.ftracker.services.DTOs.UpdateCostRequest;
 import de.ftracker.services.DTOs.UpdateFixedCostRequest;
 import de.ftracker.utils.MonthNavigation;
 import de.ftracker.utils.MonthlySums;
-import org.hibernate.sql.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,15 +30,17 @@ public class CostManager {
     private final CostTablesRepository costTablesRepository;
     private final FixedCostsRepository fixedCostsRepository;
     private final CostAggregationService costAggregationService;
+    private final PotManager potManager;
 
     @Autowired
     public CostManager(CostTablesRepository costTablesRepository,
                        FixedCostsRepository fixedCostsRepository,
-                       CostRepository costRepository, PotSummaryRepository potSummaryRepository) {
+                       CostRepository costRepository, PotSummaryRepository potSummaryRepository, PotRepository potRepository, PotManager potManager) {
         this.costTablesRepository = costTablesRepository;
         this.fixedCostsRepository = fixedCostsRepository;
         this.costAggregationService = new CostAggregationService();
         this.costRepository = costRepository;
+        this.potManager = potManager;
     }
     /*
     getIncome: the whole income table
@@ -89,26 +90,26 @@ public class CostManager {
                 .collect(Collectors.toList());
     }
 
-    public List<FixedCost> getMonthsFixedIncome(YearMonth yearMonth) {
-        return costAggregationService.getApplicableFixedCosts(getFixedIncome(), yearMonth);
+    public List<Cost> getMonthsFixedIncome(YearMonth yearMonth) {
+        return costAggregationService.getApplicableFixedIncome(getFixedIncome(), yearMonth);
     }
 
-    public List<FixedCost> getMonthsFixedIncome(int year, int month) {
+    public List<Cost> getMonthsFixedIncome(int year, int month) {
         return getMonthsFixedIncome(YearMonth.of(year, month));
     }
 
-    public List<FixedCost> getMonthsFixedExp(YearMonth yearMonth) {
-        return costAggregationService.getApplicableFixedCosts(getFixedExp(), yearMonth);
+    public List<Cost> getMonthsFixedExp(YearMonth yearMonth) {
+        return costAggregationService.getApplicableFixedExp(getFixedExp(), yearMonth);
     }
 
-    public List<FixedCost> getMonthsFixedExp(int year, int month) {
+    public List<Cost> getMonthsFixedExp(int year, int month) {
         return getMonthsFixedExp(YearMonth.of(year, month));
     }
 
 
     public List<Cost> getAllMonthsIncome(YearMonth month) {
         List<Cost> income = getMonthsIncome(month);
-        income.addAll(costAggregationService.getApplicableFixedCosts(getFixedIncome(), month));
+        income.addAll(costAggregationService.getApplicableFixedExp(getFixedIncome(), month));
         return income;
     }
 
@@ -118,7 +119,7 @@ public class CostManager {
 
     public List<Cost> getAllMonthsExp(YearMonth month) {
         List<Cost> exp = getMonthsExp(month);
-        exp.addAll(costAggregationService.getApplicableFixedCosts(getFixedExp(), month));
+        exp.addAll(costAggregationService.getApplicableFixedExp(getFixedExp(), month));
         return exp;
     }
 
@@ -192,17 +193,39 @@ public class CostManager {
     }
 
     public void addToFixedExp(FixedCost exp) {
-        if(exp.getFrequency() == Interval.MONTHLY) {
+        fixedCostsRepository.save(exp);
+
+        if(exp.getFrequency() != Interval.MONTHLY) {
+            CostAggregationService costAggregationService = new CostAggregationService();
+            MonthNavigation monthNavigation = new MonthNavigation(exp.getStart());
+            YearMonth lastMonth = monthNavigation.getPrevYearMonth();
+            potManager.addPot(new PotForRegularExp(
+                    exp.getDescr(),
+                    lastMonth,
+                    lastMonth,
+                    costAggregationService.getMonthlyAmount(exp),
+                    exp.getId(),
+                    exp.getFrequency())
+            );
+        }
+        /*if(exp.getFrequency() == Interval.MONTHLY) {
             fixedCostsRepository.save(exp);
         } else {
             fixedCostsRepository.save(
-                    new FixedCost(exp.getDescr(), costAggregationService.getMonthlyAmount(exp), false, Interval.MONTHLY, exp.getStart(), exp.getEndValue())
+                new FixedCost(exp.getDescr(),
+                        costAggregationService.getMonthlyAmount(exp),
+                        false,
+                        Interval.MONTHLY,
+                        exp.getStart(),
+                        exp.getEndValue()
+                )
             );
-        }
+        }*/
     }
 
     // - - DELETE - -
     public void deleteFromFixedCosts(Long id) {
+        potManager.decouplePots(id);
         fixedCostsRepository.deleteById(id);
     }
 
@@ -274,8 +297,6 @@ public class CostManager {
             tables.addCostToExpenses(cost);
             costTablesRepository.save(tables);
             potManager.saveInRepo(actualPot);
-            System.out.println("NEW ENTRY - - ");
-            actualPot.getEntries().forEach( e -> System.out.println(e.getCost().getId()));
         } else {
             Cost cost = new Cost("auf Pots zu Verteilen", amount, false);
             tables.addCostToExpenses(cost);
@@ -381,5 +402,13 @@ public class CostManager {
                 new MonthNavigation(changeMonth).getPrevYearMonth()
         );
         return updateOldFixedCostRequest;
+    }
+
+    public List<Long> getFCostsIdsWithNonMonthlyRegExp() {
+        return getFixedExp()
+                .stream()
+                .filter(fCost -> fCost.getFrequency() != Interval.MONTHLY)
+                .map(Cost::getId)
+                .toList();
     }
 }

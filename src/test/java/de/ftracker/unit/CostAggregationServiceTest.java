@@ -11,12 +11,10 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.Month;
 import java.time.YearMonth;
-import java.util.Arrays;
 import java.util.List;
 
 import static java.time.Month.AUGUST;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 public class CostAggregationServiceTest {
 
@@ -35,7 +33,7 @@ public class CostAggregationServiceTest {
                 new BigDecimal("50"), true, Interval.MONTHLY, YearMonth.of(2025, Month.JULY), null);
         List<FixedCost> fixedCosts = List.of(fixedCost);
 
-        List<FixedCost> applFixedCosts = costAggregationService.getApplicableFixedCosts(fixedCosts, YearMonth.of(2025, Month.JULY));
+        List<Cost> applFixedCosts = costAggregationService.getApplicableFixedExp(fixedCosts, YearMonth.of(2025, Month.JULY));
 
         assertThat(applFixedCosts).anyMatch(fc -> fc.getDescr().equals("fixedIncome"));
 
@@ -48,7 +46,7 @@ public class CostAggregationServiceTest {
 
         List<FixedCost> fixedCosts = List.of(fixedCost);
 
-        List<FixedCost> applFixedCosts = costAggregationService.getApplicableFixedCosts(fixedCosts, YearMonth.of(2025, Month.AUGUST));
+        List<Cost> applFixedCosts = costAggregationService.getApplicableFixedExp(fixedCosts, YearMonth.of(2025, Month.AUGUST));
 
         assertThat(applFixedCosts).anyMatch(fc -> fc.getDescr().equals("fixedIncome"));
 
@@ -61,7 +59,7 @@ public class CostAggregationServiceTest {
                 new BigDecimal("50"), true, Interval.MONTHLY, YearMonth.of(2025, Month.JULY), null);
         List<FixedCost> fixedCosts = List.of(fixedCost);
 
-        List<FixedCost> applFixedCosts = costAggregationService.getApplicableFixedCosts(fixedCosts, YearMonth.of(2025, Month.JUNE));
+        List<Cost> applFixedCosts = costAggregationService.getApplicableFixedExp(fixedCosts, YearMonth.of(2025, Month.JUNE));
 
         assertThat(applFixedCosts).noneMatch(fc -> fc.getDescr().equals("fixedIncome"));
 
@@ -73,7 +71,7 @@ public class CostAggregationServiceTest {
                 new BigDecimal("50"), true, Interval.MONTHLY, YearMonth.of(2025, Month.JULY), YearMonth.of(2025, AUGUST));
         List<FixedCost> fixedCosts = List.of(fixedCost);
 
-        List<FixedCost> applFixedCosts = costAggregationService.getApplicableFixedCosts(fixedCosts, YearMonth.of(2025, Month.SEPTEMBER));
+        List<Cost> applFixedCosts = costAggregationService.getApplicableFixedExp(fixedCosts, YearMonth.of(2025, Month.SEPTEMBER));
 
         assertThat(applFixedCosts).noneMatch(fc -> fc.getDescr().equals("fixedIncome"));
 
@@ -86,7 +84,7 @@ public class CostAggregationServiceTest {
                 new BigDecimal("50"), true, Interval.MONTHLY, YearMonth.of(2025, Month.JULY), YearMonth.of(2025, AUGUST));
         List<FixedCost> fixedCosts = List.of(fixedCost);
 
-        List<FixedCost> applFixedCosts = costAggregationService.getApplicableFixedCosts(fixedCosts, YearMonth.of(2025, Month.AUGUST));
+        List<Cost> applFixedCosts = costAggregationService.getApplicableFixedExp(fixedCosts, YearMonth.of(2025, Month.AUGUST));
 
         assertThat(applFixedCosts).anyMatch(fc -> fc.getDescr().equals("fixedIncome"));
 

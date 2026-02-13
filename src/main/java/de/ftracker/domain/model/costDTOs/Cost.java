@@ -37,6 +37,13 @@ public class Cost {
         // Default-Konstruktor für Spring Binding
     }
 
+    public Cost(Long id, String descr, BigDecimal amount, boolean isIncome) {
+        this.id = id;
+        this.descr = descr;
+        this.amount = amount;
+        this.isIncome = isIncome;
+    }
+
     public Cost(String descr, BigDecimal amount, boolean isIncome) {
         this.descr = descr;
         this.amount = amount;

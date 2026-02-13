@@ -17,6 +17,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 public class PotManager {
 
@@ -35,7 +37,7 @@ public class PotManager {
     public List<BudgetPot> getPots() {
         return potRepository.findAll().stream()
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     public BigDecimal getUndistributed() {
@@ -206,5 +208,35 @@ public class PotManager {
             entry.ifPresent(potEntry -> potEntry.setAmount(amount));
             potRepository.save(pot);
         }
+    }
+
+    public List<PotForRegularExp> getPotsForRegularExp() {
+        return getPots()
+                .stream()
+                .filter(pot -> pot instanceof PotForRegularExp)
+                .map(PotForRegularExp.class::cast)
+                .toList();
+    }
+
+    public void updatePotsForReqularExp(List<Long> ids) {
+        for( Long id : ids ) {
+            List<PotForRegularExp> regularExpPots = getPotsForRegularExp();
+            for(PotForRegularExp pot: regularExpPots) {
+                if(pot.getFCostId() != null && pot.getFCostId().equals(id)) {
+                    update(pot, YearMonth.now());
+                }
+            }
+        }
+    }
+
+    public void decouplePots(Long id) {
+        List<PotForRegularExp> regularExpPots = getPotsForRegularExp();
+        for(PotForRegularExp pot: regularExpPots) {
+            if(pot.getFCostId().equals(id)) {
+                pot.setFCostId(null);
+                potRepository.save(pot);
+            }
+        }
+
     }
 }
