@@ -39,6 +39,19 @@ public class MonthNavigation {
         return (currMonth == 1 ? 12 : currMonth-1);
     }
 
+    public static int computeNumberOfMonthsPast(YearMonth start, YearMonth now) {
+        int years = now.getYear() - start.getYear();
+        int months = now.getMonthValue() - start.getMonthValue();
+        return years * 12 + months;
+    }
+
+    private YearMonth computeNMonthsInFuture(YearMonth currYearMonth, int n) {
+        int month = (currYearMonth.getMonthValue() + n) % 12;
+        int yearsPast = (currYearMonth.getMonthValue() + n) / 12;
+        int year = currYearMonth.getYear() + yearsPast;
+        return YearMonth.of(year, month);
+    }
+
     public YearMonth getPrevYearMonth() {
         return YearMonth.of(
                 prevMonthsYear,
