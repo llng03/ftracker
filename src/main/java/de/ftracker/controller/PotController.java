@@ -1,6 +1,7 @@
 package de.ftracker.controller;
 
 import de.ftracker.domain.model.potsDTOs.BudgetPot;
+import de.ftracker.services.CostManager;
 import de.ftracker.services.DTOs.DistributeRequest;
 import de.ftracker.services.DTOs.PotOverviewDTO;
 import de.ftracker.services.DTOs.TakeMoneyFromPotRequest;
