@@ -22,6 +22,9 @@ public class MonthOverviewService {
         monthOverviewDTO.setCurrMonth(month);
         monthOverviewDTO.setCurrYear(year);
 
+        costManager.getOrCreate("default");
+        monthOverviewDTO.setAllCategories(costManager.getAllCategories());
+
         monthOverviewDTO.setMonthsIncome(costManager.getMonthsIncome(year, month));
         monthOverviewDTO.setMonthsExpense(costManager.getMonthsExp(year, month));
 

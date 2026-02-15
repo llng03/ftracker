@@ -83,6 +83,12 @@ public class CostController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/newCategory")
+    public ResponseEntity<Void> addNewCategory(@RequestParam String categoryName) {
+        costManager.addCategory(categoryName);
+        return ResponseEntity.ok().build();
+    }
+
     @PatchMapping("/updateCost")
     public ResponseEntity<Void> updateCost(@RequestBody UpdateCostRequest updateCostRequest,
                                            @RequestParam int year, @RequestParam int month) {

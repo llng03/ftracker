@@ -1,10 +1,7 @@
 package de.ftracker.services;
 
 import de.ftracker.domain.model.CostTables;
-import de.ftracker.domain.model.costDTOs.Cost;
-import de.ftracker.domain.model.costDTOs.FixedCost;
-import de.ftracker.domain.model.costDTOs.FixedCostForm;
-import de.ftracker.domain.model.costDTOs.Interval;
+import de.ftracker.domain.model.costDTOs.*;
 import de.ftracker.domain.model.potsDTOs.BudgetPot;
 import de.ftracker.domain.model.potsDTOs.PotEntry;
 import de.ftracker.domain.model.potsDTOs.PotForRegularExp;
@@ -30,16 +27,20 @@ public class CostManager {
     private final CostTablesRepository costTablesRepository;
     private final FixedCostsRepository fixedCostsRepository;
     private final CostAggregationService costAggregationService;
+    private final CategoryRepository categoryRepository;
     private final PotManager potManager;
 
     @Autowired
     public CostManager(CostTablesRepository costTablesRepository,
                        FixedCostsRepository fixedCostsRepository,
-                       CostRepository costRepository, PotSummaryRepository potSummaryRepository, PotRepository potRepository, PotManager potManager) {
+                       CostRepository costRepository, PotSummaryRepository potSummaryRepository,
+                       PotRepository potRepository, CategoryRepository categoryRepository,
+                       PotManager potManager) {
         this.costTablesRepository = costTablesRepository;
         this.fixedCostsRepository = fixedCostsRepository;
         this.costAggregationService = new CostAggregationService();
         this.costRepository = costRepository;
+        this.categoryRepository = categoryRepository;
         this.potManager = potManager;
     }
     /*
@@ -410,5 +411,19 @@ public class CostManager {
                 .filter(fCost -> fCost.getFrequency() != Interval.MONTHLY)
                 .map(Cost::getId)
                 .toList();
+    }
+    
+    public List<String> getAllCategories() {
+        return categoryRepository.findAll().stream().map(c -> c.getCategoryName()).toList();
+    }
+    
+    public void addCategory(String name) {
+        Category newCategory = new Category(name);
+        categoryRepository.save(newCategory);
+    }
+
+    public Category getOrCreate(String name) {
+        return categoryRepository.findByCategoryName("DEFAULT")
+                .orElseGet(() -> categoryRepository.save(new Category(name)));
     }
 }

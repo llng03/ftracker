@@ -1,8 +1,6 @@
 package de.ftracker.domain.model.costDTOs;
 
 
-import de.ftracker.domain.model.CostTables;
-import de.ftracker.domain.model.potsDTOs.PotEntry;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -33,21 +31,36 @@ public class Cost {
 
     private boolean isIncome;
 
+    @OneToOne
+    private Category category;
+
     public Cost() {
         // Default-Konstruktor für Spring Binding
     }
 
-    public Cost(Long id, String descr, BigDecimal amount, boolean isIncome) {
+    public Cost(Long id, String descr, BigDecimal amount, boolean isIncome, Category category) {
+        this(id, descr, amount, isIncome);
+        this.category = category;
+    }
+
+    public Cost (Long id, String descr, BigDecimal amount, boolean isIncome) {
         this.id = id;
         this.descr = descr;
         this.amount = amount;
         this.isIncome = isIncome;
+        this.category = null;
+    }
+
+    public Cost(String descr, BigDecimal amount, boolean isIncome, Category category) {
+        this(descr, amount, isIncome);
+        this.category = category;
     }
 
     public Cost(String descr, BigDecimal amount, boolean isIncome) {
         this.descr = descr;
         this.amount = amount;
         this.isIncome = isIncome;
+        this.category = null;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package de.ftracker.services.DTOs;
 
+import de.ftracker.domain.model.costDTOs.Category;
 import de.ftracker.domain.model.costDTOs.Cost;
 import de.ftracker.domain.model.costDTOs.FixedCost;
 import lombok.Getter;
@@ -13,6 +14,8 @@ import java.util.List;
 public class MonthOverviewDTO {
     private int currYear;
     private int currMonth;
+
+    private List<String> allCategories;
 
     // - - costs - - //
     private List<Cost> monthsIncome;
