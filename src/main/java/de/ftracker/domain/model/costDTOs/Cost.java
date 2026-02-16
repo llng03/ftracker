@@ -31,7 +31,7 @@ public class Cost {
 
     private boolean isIncome;
 
-    @OneToOne
+    @ManyToOne
     private Category category;
 
     public Cost() {
