@@ -315,6 +315,7 @@ public class CostManager {
                 new IllegalArgumentException("Found no cost with id " + updateCostRequest.getCostId()));
         cost.setDescr(updateCostRequest.getDescr());
         cost.setAmount(updateCostRequest.getAmount());
+        cost.setCategory(updateCostRequest.getCategory());
         potManager.updateAssociatedPotEntry(updateCostRequest.getCostId(), updateCostRequest.getAmount());
         costTablesRepository.save(tables);
     }

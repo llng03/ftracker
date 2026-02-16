@@ -1,5 +1,6 @@
 package de.ftracker.services.DTOs;
 
+import de.ftracker.domain.model.costDTOs.Category;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,4 +16,6 @@ public class UpdateCostRequest {
     private String descr;
 
     private BigDecimal amount;
+
+    private Category category;
 }
