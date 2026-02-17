@@ -18,6 +18,9 @@ public class StatisticsOverviewDTOService {
         statisticsOverviewDTO.setCostSumPerCategory(
                 statisticsService.getCostSumPerCategory(year, month)
         );
+        statisticsOverviewDTO.setExpenseSum(statisticsService.getExpenseSumWOFixedCost(year, month));
+        statisticsOverviewDTO.setDifferenceSum(statisticsService.differenceToLastMonth(year, month));
+
         return statisticsOverviewDTO;
     }
 

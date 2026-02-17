@@ -10,4 +10,8 @@ import java.util.Map;
 @Setter
 public class StatisticsOverviewDTO {
     private Map<String, BigDecimal> costSumPerCategory;
+
+    private BigDecimal expenseSum;
+
+    private Integer differenceSum;
 }
