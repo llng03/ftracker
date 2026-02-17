@@ -85,7 +85,7 @@ public class CostAggregationService {
     }
 
     public List<Cost> getApplicableFixedIncome(List<FixedCost> fixedIncome, YearMonth yearMonth) {
-        return fixedIncome
+        return getPresentFixedCosts(fixedIncome, yearMonth)
                 .stream()
                 .filter(fCost -> isApplicable(fCost, yearMonth))
                 .map(fCost -> new Cost(fCost.getId(), fCost.getDescr(), fCost.getAmount(), fCost.getIsIncome()))
