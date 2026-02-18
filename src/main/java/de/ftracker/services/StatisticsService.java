@@ -11,6 +11,10 @@ import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 @Service
 public class StatisticsService {
@@ -22,7 +26,7 @@ public class StatisticsService {
     }
 
     public Map<String, BigDecimal> getCostSumPerCategory(int year, int month) {
-        Map<String, BigDecimal> costSumPerCategory = new HashMap<>();
+        Map<String, BigDecimal> costSumPerCategory = new LinkedHashMap<>();
 
         List<Cost> monthsExp = costManager.getMonthsExp(year, month);
 
@@ -35,7 +39,16 @@ public class StatisticsService {
             }
         }
 
-        return costSumPerCategory;
+        return costSumPerCategory
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, BigDecimal>comparingByValue().reversed())
+                .collect(Collectors.toMap(
+                        Entry::getKey,
+                        Entry::getValue,
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
     }
 
     public BigDecimal getExpenseSumWOFixedCost(int year, int month) {
