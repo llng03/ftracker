@@ -416,7 +416,7 @@ public class CostManager {
     
     public List<String> getAllCategories() {
         return categoryRepository.findAll().stream()
-                .map(c -> c.getCategoryName())
+                .map(Category::getCategoryName)
                 .sorted(String::compareTo)
                 .toList();
     }
