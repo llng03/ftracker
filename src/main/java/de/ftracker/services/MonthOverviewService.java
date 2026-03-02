@@ -1,5 +1,6 @@
 package de.ftracker.services;
 
+import de.ftracker.domain.model.AppUser;
 import de.ftracker.services.DTOs.MonthOverviewDTO;
 import de.ftracker.utils.MonthNavigation;
 import de.ftracker.utils.MonthlySums;
@@ -9,35 +10,36 @@ import org.springframework.stereotype.Service;
 @Service
 public class MonthOverviewService {
     private final CostManager costManager;
+    private final PotManager potManager;
 
     @Autowired
-    public MonthOverviewService(CostManager costManager) {
+    public MonthOverviewService(CostManager costManager, PotManager potManager) {
         this.costManager = costManager;
+        this.potManager = potManager;
     }
 
-    public MonthOverviewDTO getMonthOverviewDTO(int year, int month) {
-        MonthNavigation monthNavigation = new MonthNavigation(year, month);
+    public MonthOverviewDTO getMonthOverviewDTO(int year, int month, AppUser user) {
         MonthOverviewDTO monthOverviewDTO = new MonthOverviewDTO();
 
         monthOverviewDTO.setCurrMonth(month);
         monthOverviewDTO.setCurrYear(year);
 
-        costManager.getOrCreate("default");
-        monthOverviewDTO.setAllCategories(costManager.getAllCategories());
 
-        monthOverviewDTO.setMonthsIncome(costManager.getMonthsIncome(year, month));
-        monthOverviewDTO.setMonthsExpense(costManager.getMonthsExp(year, month));
+        monthOverviewDTO.setAllCategories(costManager.getAllCategories(user));
 
-        monthOverviewDTO.setMonthsFixedIncome(costManager.getMonthsFixedIncome(year, month));
-        monthOverviewDTO.setMonthsFixedExpense(costManager.getMonthsFixedExp(year, month));
+        monthOverviewDTO.setMonthsIncome(costManager.getMonthsIncome(year, month, user.getId()));
+        monthOverviewDTO.setMonthsExpense(costManager.getMonthsExp(year, month, user.getId()));
 
-        monthOverviewDTO.setFixedIncome(costManager.getFixedIncome());
-        monthOverviewDTO.setFixedExpense(costManager.getFixedExp());
+        monthOverviewDTO.setMonthsFixedIncome(costManager.getMonthsFixedIncome(user.getId(), year, month));
+        monthOverviewDTO.setMonthsFixedExpense(costManager.getMonthsFixedExp(user.getId(), year, month));
 
-        monthOverviewDTO.setAllMonthsIncome(costManager.getAllMonthsIncome(year, month));
-        monthOverviewDTO.setAllMonthsExpense(costManager.getAllMonthsExp(year, month));
+        monthOverviewDTO.setFixedIncome(costManager.getFixedIncome(user.getId()));
+        monthOverviewDTO.setFixedExpense(costManager.getFixedExp(user.getId()));
 
-        MonthlySums monthlySums = costManager.calculateThisMonthsSums(year, month);
+        monthOverviewDTO.setAllMonthsIncome(costManager.getAllMonthsIncome(year, month, user.getId()));
+        monthOverviewDTO.setAllMonthsExpense(costManager.getAllMonthsExp(year, month, user.getId()));
+
+        MonthlySums monthlySums = costManager.calculateThisMonthsSums(year, month, user.getId());
 
         monthOverviewDTO.setSumIn(monthlySums.sumIn);
         monthOverviewDTO.setSumOut(monthlySums.sumOut);

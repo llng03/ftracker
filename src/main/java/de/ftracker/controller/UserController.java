@@ -23,7 +23,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public Map<String, Object> login(@AuthenticationPrincipal OAuth2User oAuth2User) {
+    public AppUser login(@AuthenticationPrincipal OAuth2User oAuth2User) {
 
         if( oAuth2User == null) {
             System.out.println("oauth2user is null");
@@ -31,13 +31,8 @@ public class UserController {
         }
 
         String providerId = oAuth2User.getAttribute("sub");
-        AppUser user = userRepository.findByProviderAndProviderUserId("google", providerId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
 
-        return Map.of(
-                "id", user.getId(),
-                "name", user.getName(),
-                "email", user.getEmail()
-        );
+        return userRepository.findByProviderAndProviderUserId("google", providerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
     }
 }

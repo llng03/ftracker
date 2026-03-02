@@ -1,12 +1,14 @@
 package de.ftracker.domain.model.costDTOs;
 
 
+import de.ftracker.domain.model.AppUser;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.userdetails.User;
 
 import java.math.BigDecimal;
 
@@ -32,35 +34,30 @@ public class Cost {
     private boolean isIncome;
 
     @ManyToOne
+    private AppUser user;
+
+    @ManyToOne
     private Category category;
 
     public Cost() {
         // Default-Konstruktor für Spring Binding
     }
 
-    public Cost(Long id, String descr, BigDecimal amount, boolean isIncome, Category category) {
-        this(id, descr, amount, isIncome);
-        this.category = category;
-    }
-
-    public Cost (Long id, String descr, BigDecimal amount, boolean isIncome) {
+    public Cost(Long id, String descr, BigDecimal amount, boolean isIncome, Category category, AppUser user) {
         this.id = id;
         this.descr = descr;
         this.amount = amount;
+        this.user = user;
         this.isIncome = isIncome;
-        this.category = null;
-    }
-
-    public Cost(String descr, BigDecimal amount, boolean isIncome, Category category) {
-        this(descr, amount, isIncome);
         this.category = category;
     }
 
-    public Cost(String descr, BigDecimal amount, boolean isIncome) {
+    public Cost(String descr, BigDecimal amount, boolean isIncome, AppUser user, Category category) {
         this.descr = descr;
         this.amount = amount;
         this.isIncome = isIncome;
-        this.category = null;
+        this.user = user;
+        this.category = category;
     }
 
     @Override
@@ -74,6 +71,10 @@ public class Cost {
 
     public boolean isFixedCost() {
         return false;
+    }
+
+    public boolean isIncome() {
+        return isIncome;
     }
 
     // equals() und hashCode() kannst du nur überschreiben, wenn nötig

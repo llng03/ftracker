@@ -20,8 +20,8 @@ public class StatisticsController {
     }
 
     @GetMapping
-    public StatisticsOverviewDTO getStatistics(@RequestParam int year, @RequestParam int month) {
-        return statisticsOverviewDTOService.getStatisticsOverviewDTO(year, month);
+    public StatisticsOverviewDTO getStatistics(@RequestParam int year, @RequestParam int month, @RequestParam Long userId) {
+        return statisticsOverviewDTOService.getStatisticsOverviewDTO(year, month, userId);
     }
 
 }

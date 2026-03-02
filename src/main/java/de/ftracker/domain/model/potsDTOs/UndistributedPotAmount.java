@@ -1,10 +1,12 @@
 package de.ftracker.domain.model.potsDTOs;
 
+import de.ftracker.domain.model.AppUser;
 import de.ftracker.domain.model.costDTOs.Cost;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.userdetails.User;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -15,7 +17,13 @@ import java.util.List;
 @Entity
 public class UndistributedPotAmount {
     @Id
-    private Long id = 1L; //only one entry
+    @Column(name="user_id")
+    private Long userId;
+
+    @OneToOne(optional=false)
+    @MapsId
+    @JoinColumn(name="user_id")
+    private AppUser user;
 
     @NotNull
     private BigDecimal undistributed = BigDecimal.ZERO;
@@ -25,11 +33,8 @@ public class UndistributedPotAmount {
 
     public UndistributedPotAmount() {}
 
-    public BigDecimal getUndistributed() {
-        return undistributed;
-    }
-
-    public void setUndistributed(BigDecimal undistributed) {
+    public UndistributedPotAmount(AppUser user, BigDecimal undistributed) {
+        this.user = user;
         this.undistributed = undistributed;
     }
 

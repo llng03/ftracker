@@ -1,9 +1,11 @@
 package de.ftracker.domain.model.potsDTOs;
 
+import de.ftracker.domain.model.AppUser;
 import de.ftracker.domain.model.costDTOs.Cost;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.UniqueElements;
 
 import java.math.BigDecimal;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Setter
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "pot_type")
@@ -23,13 +26,17 @@ public class BudgetPot {
 
     private String name;
 
+    @ManyToOne
+    private AppUser user;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<PotEntry> entries = new ArrayList<>();
 
     public BudgetPot(){}
 
-    public BudgetPot(String name) {
+    public BudgetPot(String name, AppUser user) {
         this.name = name;
+        this.user = user;
         this.entries = new ArrayList<>();
     }
 

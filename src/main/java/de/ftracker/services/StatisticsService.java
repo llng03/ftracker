@@ -25,10 +25,10 @@ public class StatisticsService {
         this.costManager = costManager;
     }
 
-    public Map<String, BigDecimal> getCostSumPerCategory(int year, int month) {
+    public Map<String, BigDecimal> getCostSumPerCategory(int year, int month, Long userId) {
         Map<String, BigDecimal> costSumPerCategory = new LinkedHashMap<>();
 
-        List<Cost> monthsExp = costManager.getMonthsExp(year, month);
+        List<Cost> monthsExp = costManager.getMonthsExp(year, month, userId);
 
         for (Cost cost : monthsExp) {
             String category = cost.getCategory().getCategoryName();
@@ -51,21 +51,21 @@ public class StatisticsService {
                 ));
     }
 
-    public BigDecimal getExpenseSumWOFixedCost(int year, int month) {
-        return costManager.getMonthsExp(year, month)
+    public BigDecimal getExpenseSumWOFixedCost(int year, int month, Long userId) {
+        return costManager.getMonthsExp(year, month, userId)
                 .stream()
                 .map(Cost::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public BigDecimal getExpenseSumWOFixedCost(YearMonth ym) {
-        return getExpenseSumWOFixedCost(ym.getYear(), ym.getMonthValue());
+    public BigDecimal getExpenseSumWOFixedCost(YearMonth ym, Long userId) {
+        return getExpenseSumWOFixedCost(ym.getYear(), ym.getMonthValue(), userId);
     }
 
-    public int differenceToLastMonth(int year, int month) {
+    public int differenceToLastMonth(int year, int month, Long userId) {
         MonthNavigation monthNavigation = new MonthNavigation(year, month);
-        BigDecimal thisMonthsSum = getExpenseSumWOFixedCost(year, month);
-        BigDecimal lastMonthsSum = getExpenseSumWOFixedCost(monthNavigation.getPrevYearMonth());
+        BigDecimal thisMonthsSum = getExpenseSumWOFixedCost(year, month, userId);
+        BigDecimal lastMonthsSum = getExpenseSumWOFixedCost(monthNavigation.getPrevYearMonth(), userId);
 
         return thisMonthsSum.subtract(lastMonthsSum).intValue();
 

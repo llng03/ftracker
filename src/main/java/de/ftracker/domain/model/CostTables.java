@@ -1,9 +1,11 @@
 package de.ftracker.domain.model;
 
+import de.ftracker.domain.model.costDTOs.Category;
 import de.ftracker.domain.model.costDTOs.Cost;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.userdetails.User;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
@@ -49,8 +51,19 @@ public class CostTables {
         return incomes;
     }
 
-    public List<Cost> getExpenses() {
-        return expenses;
+    public List<Cost> getIncomes(Long userId) {
+        return new ArrayList<>(incomes.stream()
+                .filter(c -> c.getUser().getId().equals(userId))
+                .toList());
+    }
+
+
+    public List<Cost> getExpenses() { return expenses; }
+
+    public List<Cost> getExpenses(Long userId) {
+        return new ArrayList<>(expenses.stream()
+                .filter(c -> c.getUser().getId().equals(userId))
+                .toList());
     }
 
     public YearMonth getYearMonth() {
@@ -81,12 +94,11 @@ public class CostTables {
     }
 
     public void addCostToExpenses(Cost cost){
-
         this.expenses.add(cost);
     }
 
-    public void addCostToExpenses(String name, BigDecimal amount) {
-        addCostToExpenses(new Cost(name, amount, false));
+    public void addCostToExpenses(String name, BigDecimal amount, Category category, AppUser user) {
+        addCostToExpenses(new Cost(name, amount, false, user, category));
     }
 
     public BigDecimal sumIncomes() {

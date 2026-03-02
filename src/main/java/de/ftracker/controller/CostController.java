@@ -1,20 +1,24 @@
 package de.ftracker.controller;
 
+import de.ftracker.domain.model.AppUser;
 import de.ftracker.domain.model.costDTOs.Cost;
 import de.ftracker.domain.model.costDTOs.FixedCostForm;
-import de.ftracker.services.CostManager;
+import de.ftracker.services.*;
 import de.ftracker.services.DTOs.*;
-import de.ftracker.services.FixedCostOverviewDTOService;
-import de.ftracker.services.MonthOverviewService;
-import de.ftracker.services.PotManager;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.YearMonth;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/costs")
 @CrossOrigin(origins = "http://localhost:5173")
 public class CostController {
@@ -22,53 +26,64 @@ public class CostController {
     private final PotManager potManager;
     private final MonthOverviewService monthOverviewService;
     private final FixedCostOverviewDTOService fixedCostOverviewDTOService;
+    private final UserRepository userRepository;
 
-    @Autowired
-    public CostController(CostManager costManager, PotManager potManager) {
-        this.costManager = costManager;
-        this.potManager = potManager;
-        this.monthOverviewService = new MonthOverviewService(costManager);
-        this.fixedCostOverviewDTOService = new FixedCostOverviewDTOService(costManager);
-    }
+
 
     @GetMapping
-    public MonthOverviewDTO getMonthOverview(@RequestParam int year, @RequestParam int month) {
-        return monthOverviewService.getMonthOverviewDTO(year, month);
+    public MonthOverviewDTO getMonthOverview(
+            @AuthenticationPrincipal OidcUser oidcUser,
+            @RequestParam int year, @RequestParam int month
+    ) {
+        AppUser user = getCurrentUser(oidcUser);
+
+        return monthOverviewService.getMonthOverviewDTO(year, month, user);
+
     }
 
     @GetMapping("/fixedCosts")
-    public FixedCostOverviewDTO getFixedCosts(@RequestParam int year, @RequestParam int month) {
-        return fixedCostOverviewDTOService.getFixedCostOverviewDTO(year, month);
+    public FixedCostOverviewDTO getFixedCosts(
+            @AuthenticationPrincipal OidcUser oidcUser,
+            @RequestParam int year, @RequestParam int month
+    ) {
+        return fixedCostOverviewDTOService.getFixedCostOverviewDTO(getCurrentUser(oidcUser), year, month);
     }
 
     @PostMapping("/fixedCost")
-    public ResponseEntity<Void> addFixedCost(@Valid @RequestBody FixedCostForm fixedCost) {
-        if(fixedCost.getIsIncome()) {
-            costManager.addToFixedIncome(fixedCost);
-        } else {
-            costManager.addToFixedExp(fixedCost);
-        }
+    public ResponseEntity<Void> addFixedCost(
+            @AuthenticationPrincipal OidcUser oidcUser,
+            @Valid @RequestBody FixedCostForm fixedCost) {
+        costManager.addFixedCost(fixedCost, getCurrentUser(oidcUser));
+
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/monthCost")
-    public ResponseEntity<Void> addCost(@RequestBody Cost cost, @RequestParam int year, @RequestParam int month) {
-        if(cost.getIsIncome()) {
-            costManager.addMonthsIncome(year, month, cost);
-        } else {
-            costManager.addMonthsExp(year, month, cost);
-        }
+    public ResponseEntity<Void> addCost(
+            @AuthenticationPrincipal OidcUser oidcUser,
+            @RequestBody CostDTO costDTO,
+            @RequestParam int year,
+            @RequestParam int month) {
+
+        System.out.println("ISINCOME in controller: " + costDTO.isIncome());
+
+        costManager.addCost(costDTO, getCurrentUser(oidcUser), year, month);
+
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/toPots")
-    public ResponseEntity<Void> addToPots(@RequestBody DistributeRequest distributeRequest,
-                                          @RequestParam int year,
-                                          @RequestParam int month
+    public ResponseEntity<Void> addToPots(
+                @AuthenticationPrincipal OidcUser oidcUser,
+                @RequestBody DistributeRequest distributeRequest,
+                @RequestParam int year,
+                @RequestParam int month
     ) {
+
         costManager.addToPot(
                 year,
                 month,
+                getCurrentUser(oidcUser),
                 potManager,
                 distributeRequest.getAmount(),
                 distributeRequest.getPotId()
@@ -77,40 +92,50 @@ public class CostController {
     }
 
     @PostMapping("/changeFixedCost")
-    public ResponseEntity<Void> changeFixedCost(@RequestBody UpdateFixedCostRequest updateFixedCostRequest,
-                                                @RequestParam YearMonth changeMonth) {
-        costManager.changeFixedCost(updateFixedCostRequest, changeMonth);
+    public ResponseEntity<Void> changeFixedCost(
+            @AuthenticationPrincipal OidcUser oidcUser,
+            @RequestBody UpdateFixedCostRequest updateFixedCostRequest,
+            @RequestParam YearMonth changeMonth) {
+        costManager.changeFixedCost(getCurrentUser(oidcUser), updateFixedCostRequest, changeMonth);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/newCategory")
-    public ResponseEntity<Void> addNewCategory(@RequestParam String categoryName) {
-        costManager.addCategory(categoryName);
+    public ResponseEntity<Void> addNewCategory(@AuthenticationPrincipal OidcUser oidcUser, @RequestParam String categoryName) {
+        costManager.addCategory(categoryName, getCurrentUser(oidcUser));
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/updateCost")
-    public ResponseEntity<Void> updateCost(@RequestBody UpdateCostRequest updateCostRequest,
-                                           @RequestParam int year, @RequestParam int month) {
-        costManager.updateCost(updateCostRequest, year, month, potManager);
+    public ResponseEntity<Void> updateCost(
+            @AuthenticationPrincipal OidcUser oidcUser,
+            @RequestBody UpdateCostRequest updateCostRequest,
+            @RequestParam int year, @RequestParam int month) {
+        costManager.updateCost(updateCostRequest, getCurrentUser(oidcUser), year,  month, potManager);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/updateFixedCost")
-    public ResponseEntity<Void> updateFixedCost(@RequestBody UpdateFixedCostRequest updateFixedCostRequest) {
-        costManager.updateFixedCost(updateFixedCostRequest);
+    public ResponseEntity<Void> updateFixedCost(
+            @AuthenticationPrincipal OidcUser oidcUser,
+            @RequestBody UpdateFixedCostRequest updateFixedCostRequest) {
+        costManager.updateFixedCost(updateFixedCostRequest, getCurrentUser(oidcUser));
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/deleteFixedCost")
-    public ResponseEntity<Void> removeFixedCost(@RequestParam Long costId) {
-        costManager.deleteFromFixedCosts(costId);
+    public ResponseEntity<Void> removeFixedCost(
+            @AuthenticationPrincipal OidcUser oidcUser,
+            @RequestParam Long costId) {
+        costManager.deleteFromFixedCosts(costId, getCurrentUser(oidcUser));
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/deleteCost")
-    public ResponseEntity<Void> removeCost(@RequestParam Long costId, @RequestParam int year, @RequestParam int month) {
-        costManager.deleteFromCosts(costId, year, month, potManager);
+    public ResponseEntity<Void> removeCost(@AuthenticationPrincipal OidcUser oidcUser,
+                                           @RequestParam Long costId, @RequestParam int year,
+                                           @RequestParam int month) {
+        costManager.deleteFromCosts(costId, getCurrentUser(oidcUser), year, month, potManager);
         return ResponseEntity.ok().build();
     }
 
@@ -118,6 +143,12 @@ public class CostController {
     public ResponseEntity<Void> deletePotEntry(@RequestBody DeleteEntryRequest deleteEntryRequest) {
         costManager.deletePotEntry(deleteEntryRequest, potManager);
         return ResponseEntity.ok().build();
+    }
+
+    private AppUser getCurrentUser(OidcUser oidcUser) {
+        String providerUserId = oidcUser.getSubject();
+        return userRepository.findByProviderAndProviderUserId("google", providerUserId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
     }
 
 }

@@ -1,17 +1,23 @@
 package de.ftracker.services;
 
+import de.ftracker.domain.model.AppUser;
 import de.ftracker.domain.model.CostTables;
 import de.ftracker.domain.model.costDTOs.*;
 import de.ftracker.domain.model.potsDTOs.BudgetPot;
 import de.ftracker.domain.model.potsDTOs.PotEntry;
 import de.ftracker.domain.model.potsDTOs.PotForRegularExp;
 import de.ftracker.domain.services.CostAggregationService;
+import de.ftracker.domain.services.FixedCostService;
+import de.ftracker.services.DTOs.CostDTO;
 import de.ftracker.services.DTOs.DeleteEntryRequest;
 import de.ftracker.services.DTOs.UpdateCostRequest;
 import de.ftracker.services.DTOs.UpdateFixedCostRequest;
 import de.ftracker.utils.MonthNavigation;
 import de.ftracker.utils.MonthlySums;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class CostManager {
     private final CostRepository costRepository;
     private final CostTablesRepository costTablesRepository;
@@ -29,20 +36,8 @@ public class CostManager {
     private final CostAggregationService costAggregationService;
     private final CategoryRepository categoryRepository;
     private final PotManager potManager;
+    private final FixedCostService fixedCostService;
 
-    @Autowired
-    public CostManager(CostTablesRepository costTablesRepository,
-                       FixedCostsRepository fixedCostsRepository,
-                       CostRepository costRepository, PotSummaryRepository potSummaryRepository,
-                       PotRepository potRepository, CategoryRepository categoryRepository,
-                       PotManager potManager) {
-        this.costTablesRepository = costTablesRepository;
-        this.fixedCostsRepository = fixedCostsRepository;
-        this.costAggregationService = new CostAggregationService();
-        this.costRepository = costRepository;
-        this.categoryRepository = categoryRepository;
-        this.potManager = potManager;
-    }
     /*
     getIncome: the whole income table
     getFixedIncome: the whole fixed income table
@@ -62,83 +57,85 @@ public class CostManager {
                 });
     }
 
-    public List<Cost> getMonthsIncome(YearMonth yearMonth) {
-        return getTablesOf(yearMonth).getIncomes();
+    public List<Cost> getMonthsIncome(YearMonth yearMonth, Long userId) {
+        return getTablesOf(yearMonth).getIncomes(userId);
     }
 
-    public List<Cost> getMonthsIncome(int year, int month) {
-        return getMonthsIncome(YearMonth.of(year, month));
+    public List<Cost> getMonthsIncome(int year, int month, Long userId) {
+        return getMonthsIncome(YearMonth.of(year, month), userId);
     }
 
-    public List<Cost> getMonthsExp(YearMonth yearMonth) {
-        return getTablesOf(yearMonth).getExpenses();
+    public List<Cost> getMonthsExp(YearMonth yearMonth, Long userId) {
+        return getTablesOf(yearMonth).getExpenses(userId);
     }
 
-    public List<Cost> getMonthsExp(int year, int month) {
-        return getMonthsExp(YearMonth.of(year, month));
+    public List<Cost> getMonthsExp(int year, int month, Long userId) {
+        return getMonthsExp(YearMonth.of(year, month), userId);
     }
 
 
-    public List<FixedCost> getFixedIncome() {
+    public List<FixedCost> getFixedIncome(Long userId) {
         return fixedCostsRepository.findAll().stream()
+                .filter(c -> c.getUser().getId().equals(userId))
                 .filter(Cost::getIsIncome)
                 .collect(Collectors.toList());
     }
 
-    public List<FixedCost> getFixedExp() {
+    public List<FixedCost> getFixedExp(Long userId) {
         return fixedCostsRepository.findAll().stream()
+                .filter(c -> c.getUser().getId().equals(userId))
                 .filter(c -> !c.getIsIncome())
                 .collect(Collectors.toList());
     }
 
-    public List<Cost> getMonthsFixedIncome(YearMonth yearMonth) {
-        return costAggregationService.getApplicableFixedIncome(getFixedIncome(), yearMonth);
+    public List<Cost> getMonthsFixedIncome(Long userId, YearMonth yearMonth) {
+        return costAggregationService.getApplicableFixedIncome(getFixedIncome(userId), yearMonth);
     }
 
-    public List<Cost> getMonthsFixedIncome(int year, int month) {
-        return getMonthsFixedIncome(YearMonth.of(year, month));
+    public List<Cost> getMonthsFixedIncome(Long userId, int year, int month) {
+        return getMonthsFixedIncome(userId, YearMonth.of(year, month));
     }
 
-    public List<Cost> getMonthsFixedExp(YearMonth yearMonth) {
-        return costAggregationService.getApplicableFixedExp(getFixedExp(), yearMonth);
+    public List<Cost> getMonthsFixedExp(Long userId, YearMonth yearMonth) {
+        return costAggregationService.getApplicableFixedExp(getFixedExp(userId), yearMonth);
     }
 
-    public List<Cost> getMonthsFixedExp(int year, int month) {
-        return getMonthsFixedExp(YearMonth.of(year, month));
+    public List<Cost> getMonthsFixedExp(Long userId, int year, int month) {
+        return getMonthsFixedExp(userId, YearMonth.of(year, month));
     }
 
 
-    public List<Cost> getAllMonthsIncome(YearMonth month) {
-        List<Cost> income = getMonthsIncome(month);
-        income.addAll(costAggregationService.getApplicableFixedExp(getFixedIncome(), month));
+    public List<Cost> getAllMonthsIncome(YearMonth month, Long userId) {
+        List<Cost> income = getMonthsIncome(month, userId);
+        income.addAll(costAggregationService.getApplicableFixedExp(getFixedIncome(userId), month));
         return income;
     }
 
-    public List<Cost> getAllMonthsIncome(int year, int month) {
-        return getAllMonthsIncome(YearMonth.of(year, month));
+    public List<Cost> getAllMonthsIncome(int year, int month, Long userId) {
+        return getAllMonthsIncome(YearMonth.of(year, month), userId);
     }
 
-    public List<Cost> getAllMonthsExp(YearMonth month) {
-        List<Cost> exp = getMonthsExp(month);
-        exp.addAll(costAggregationService.getApplicableFixedExp(getFixedExp(), month));
+    public List<Cost> getAllMonthsExp(YearMonth month, Long userId) {
+        List<Cost> exp = getMonthsExp(month, userId);
+        exp.addAll(costAggregationService.getApplicableFixedExp(getFixedExp(userId), month));
         return exp;
     }
 
-    public List<Cost> getAllMonthsExp(int year, int month) {
-        return getAllMonthsExp(YearMonth.of(year, month));
+    public List<Cost> getAllMonthsExp(int year, int month, Long userId) {
+        return getAllMonthsExp(YearMonth.of(year, month), userId);
     }
 
 
     //DAS HIER IST EIGENTLICH NUR WEITERLEITUNG DER METHODEN
-    public MonthlySums calculateThisMonthsSums(YearMonth month) {
+    public MonthlySums calculateThisMonthsSums(YearMonth month, Long userId) {
         return costAggregationService.calculateMonthlySums(
-                getAllMonthsIncome(month),
-                getAllMonthsExp(month)
+                getAllMonthsIncome(month, userId),
+                getAllMonthsExp(month, userId)
         );
     }
 
-    public MonthlySums calculateThisMonthsSums(int year, int month) {
-        return calculateThisMonthsSums(YearMonth.of(year, month));
+    public MonthlySums calculateThisMonthsSums(int year, int month, Long userId) {
+        return calculateThisMonthsSums(YearMonth.of(year, month), userId);
     }
 
     public BigDecimal getMonthlyCost(FixedCostForm costForm) {
@@ -165,11 +162,12 @@ public class CostManager {
     }
 
     @Transactional
-    public void addToFixedIncome(FixedCostForm incomeForm) {
+    public void addToFixedIncome(FixedCostForm incomeForm, AppUser user) {
         FixedCost fixedCost = new FixedCost();
         fixedCost.setDescr(incomeForm.getDescr());
         fixedCost.setAmount(incomeForm.getAmount());
         fixedCost.setIsIncome(incomeForm.getIsIncome());
+        fixedCost.setUser(user);
         fixedCost.setFrequency(incomeForm.getFrequency());
         fixedCost.setStart(incomeForm.getStart());
         fixedCost.setEnd(incomeForm.getEnd());
@@ -182,26 +180,27 @@ public class CostManager {
     }
 
     @Transactional
-    public void addToFixedExp(FixedCostForm expForm) {
+    public void addToFixedExp(FixedCostForm expForm, AppUser user) {
         FixedCost fixedCost = new FixedCost();
         fixedCost.setDescr(expForm.getDescr());
         fixedCost.setAmount(expForm.getAmount());
         fixedCost.setIsIncome(false);
+        fixedCost.setUser(user);
         fixedCost.setFrequency(expForm.getFrequency());
         fixedCost.setStart(expForm.getStart());
         fixedCost.setEnd(expForm.getEnd());
-        addToFixedExp(fixedCost);
+        addToFixedExp(fixedCost, user);
     }
 
-    public void addToFixedExp(FixedCost exp) {
+    public void addToFixedExp(FixedCost exp, AppUser user) {
         fixedCostsRepository.save(exp);
 
         if(exp.getFrequency() != Interval.MONTHLY) {
-            CostAggregationService costAggregationService = new CostAggregationService();
             MonthNavigation monthNavigation = new MonthNavigation(exp.getStart());
             YearMonth lastMonth = monthNavigation.getPrevYearMonth();
             potManager.addPot(new PotForRegularExp(
                     exp.getDescr(),
+                    user,
                     lastMonth,
                     lastMonth,
                     costAggregationService.getMonthlyAmount(exp),
@@ -225,13 +224,13 @@ public class CostManager {
     }
 
     // - - DELETE - -
-    public void deleteFromFixedCosts(Long id) {
-        potManager.decouplePots(id);
+    public void deleteFromFixedCosts(Long id, AppUser user) {
+        potManager.decouplePots(id, user);
         fixedCostsRepository.deleteById(id);
     }
 
     @Transactional
-    public void deleteFromCosts(Long id, int year, int month, PotManager potManager) {
+    public void deleteFromCosts(Long id, AppUser user, int year, int month, PotManager potManager) {
         System.out.println("DELETE requested id=" + id);
 
         CostTables table = costTablesRepository.customFind(year, month)
@@ -257,8 +256,8 @@ public class CostManager {
                         .findFirst()
                         .orElseThrow(() -> new IllegalArgumentException("Found no Cost with id " + id)));
 
-        potManager.deletePotEntryWithCostId(cost);
-        potManager.getExpenseIdsRaw().forEach(System.out::println);
+        potManager.deletePotEntryWithCostId(cost, user);
+        potManager.getExpenseIdsRaw(user).forEach(System.out::println);
 
         table.deleteCostById(cost.getId());
 
@@ -270,57 +269,67 @@ public class CostManager {
 
     // - - POTS - -
     @Transactional
-    public void addToPots(CostTables thisTables, PotManager potManager, BigDecimal amount) {
-        thisTables.addCostToExpenses("auf Pots zu Verteilen", amount);
-        potManager.addToUndistributed(amount);
+    public void addToPots(CostTables thisTables, AppUser user, PotManager potManager, BigDecimal amount) {
+        Category toPotsCategory = categoryRepository.findByUserAndCategoryName(user, "-> pots").orElseThrow(() ->
+                new IllegalArgumentException("no -> pots-category found for user: " + user.getName()));
+        thisTables.addCostToExpenses("auf Pots zu Verteilen", amount, toPotsCategory, user);
+        potManager.addToUndistributed(amount, user);
         costTablesRepository.save(thisTables);
     }
 
     @Transactional
-    public void addToPot(CostTables thisTables, PotManager potManager, BigDecimal amount, String potName) {
-        thisTables.addCostToExpenses("auf Pot " + potName + " verteilen", amount);
-        potManager.addToUndistributed(amount);
-        potManager.distribute(amount, potName);
+    public void addToPot(CostTables thisTables, AppUser user,  PotManager potManager, BigDecimal amount, String potName) {
+        Category toPotsCategory = categoryRepository.findByUserAndCategoryName(user, "-> pots").orElseThrow(() ->
+                new IllegalArgumentException("no -> pots-category found for user: " + user.getName()));
+        thisTables.addCostToExpenses("auf Pot " + potName + " verteilen", amount, toPotsCategory, user);
+        potManager.addToUndistributed(amount, user);
+        potManager.distribute(amount, potName, user);
         costTablesRepository.save(thisTables);
     }
 
     @Transactional
-    public void addToPot(int year, int month, PotManager potManager, BigDecimal amount, Long potId) {
+    public void addToPot(int year, int month, AppUser user, PotManager potManager, BigDecimal amount, Long potId) {
         CostTables tables = costTablesRepository.findByMonthAndYear(month, year).orElseThrow( () ->
                 new IllegalArgumentException("Keine Daten für " + month + "-" + year + " gefunden.")
         );
-        Optional<BudgetPot> pot = potManager.getPotById(potId);
-        if(pot.isPresent()) {
-            BudgetPot actualPot = pot.get();
-            Cost cost = new Cost("in Pot " + actualPot.getName() + " gelegt", amount, false);
+        boolean potPresent = !(potId == null);
+        if(potPresent) {
+            potPresent = potManager.getPotById(potId).isPresent();
+        }
+        Category toPotsCategory = categoryRepository.findByUserAndCategoryName(user, "-> pots").orElseThrow(() ->
+                new IllegalArgumentException("Did not find -> pots-Category"));
+        if(potPresent) {
+            BudgetPot actualPot = potManager.getPotById(potId).get();
+            Cost cost = new Cost("in Pot " + actualPot.getName() + " gelegt", amount, false, user, toPotsCategory);
             potManager.addEntry(actualPot, LocalDate.now(), amount, cost);
             costRepository.save(cost);
             tables.addCostToExpenses(cost);
             costTablesRepository.save(tables);
             potManager.saveInRepo(actualPot);
         } else {
-            Cost cost = new Cost("auf Pots zu Verteilen", amount, false);
+            Cost cost = new Cost("auf Pots zu Verteilen", amount, false, user, toPotsCategory);
             tables.addCostToExpenses(cost);
             costRepository.saveAndFlush(cost);
             costTablesRepository.saveAndFlush(tables);
-            potManager.addToUndistributed(amount);
-            potManager.addCostToUndistributed(cost);
+            potManager.addToUndistributed(amount, user);
+            potManager.addCostToUndistributed(cost, user);
         }
     }
 
-    public void updateCost(UpdateCostRequest updateCostRequest, int year, int month, PotManager potManager) {
+    public void updateCost(UpdateCostRequest updateCostRequest, AppUser user, int year, int month, PotManager potManager) {
         CostTables tables = costTablesRepository.findByMonthAndYear(month,year).orElseThrow( () ->
                 new IllegalArgumentException("Found no tables for " +  year + "-" + month));
         Cost cost = tables.findCostById(updateCostRequest.getCostId()).orElseThrow(() ->
                 new IllegalArgumentException("Found no cost with id " + updateCostRequest.getCostId()));
         cost.setDescr(updateCostRequest.getDescr());
         cost.setAmount(updateCostRequest.getAmount());
-        cost.setCategory(updateCostRequest.getCategory());
+        cost.setUser(user);
+        cost.setCategory(categoryRepository.findByUserAndCategoryName(user, updateCostRequest.getCategory()).orElseThrow());
         potManager.updateAssociatedPotEntry(updateCostRequest.getCostId(), updateCostRequest.getAmount());
         costTablesRepository.save(tables);
     }
 
-    public void updateFixedCost(UpdateFixedCostRequest updateFixedCostRequest) {
+    public void updateFixedCost(UpdateFixedCostRequest updateFixedCostRequest, AppUser user) {
         FixedCost fCost = fixedCostsRepository.findById(updateFixedCostRequest.getCostId())
                 .orElseThrow( () -> new IllegalArgumentException(
                         "Found no FixedCost with id "+ updateFixedCostRequest.getCostId()
@@ -328,6 +337,7 @@ public class CostManager {
         );
         fCost.setDescr(updateFixedCostRequest.getDescr());
         fCost.setAmount(updateFixedCostRequest.getAmount());
+        fCost.setUser(user);
         fCost.setFrequency(updateFixedCostRequest.getFrequency());
         fCost.setStartMonth(updateFixedCostRequest.getStart().getMonth().getValue());
         fCost.setStartYear(updateFixedCostRequest.getStart().getYear());
@@ -365,19 +375,21 @@ public class CostManager {
         costTablesRepository.save(tables);
     }
 
-    public void changeFixedCost(UpdateFixedCostRequest updateFixedCostRequest, YearMonth changeMonth) {
+    @Transactional
+    public void changeFixedCost(AppUser user, UpdateFixedCostRequest updateFixedCostRequest, YearMonth changeMonth) {
         //set endmonth of old fixedcost of month before changeMonth
         FixedCost oldFixedCost = fixedCostsRepository.findById(updateFixedCostRequest.getCostId())
                 .orElseThrow(() -> new IllegalArgumentException("did not find id"));
         UpdateFixedCostRequest updateOldFixedCostRequest = createRequestForEndingFixedCost(
                 oldFixedCost, changeMonth);
-        updateFixedCost(updateOldFixedCostRequest);
+        updateFixedCost(updateOldFixedCostRequest, user);
 
         //create new fixed costs with new data and start month before changeMonth
-        FixedCost newFixedCost = new FixedCost(
+        FixedCost newFixedCost = fixedCostService.create(
               updateFixedCostRequest.getDescr(),
               updateFixedCostRequest.getAmount(),
               oldFixedCost.getIsIncome(),
+              user,
               updateFixedCostRequest.getFrequency(),
               changeMonth,
               updateFixedCostRequest.getEnd()
@@ -385,7 +397,7 @@ public class CostManager {
         if(newFixedCost.getIsIncome()) {
             addToFixedIncome(newFixedCost);
         } else {
-            addToFixedExp(newFixedCost);
+            addToFixedExp(newFixedCost, user);
         }
         fixedCostsRepository.save(newFixedCost);
     }
@@ -406,28 +418,62 @@ public class CostManager {
         return updateOldFixedCostRequest;
     }
 
-    public List<Long> getFCostsIdsWithNonMonthlyRegExp() {
-        return getFixedExp()
+    public List<Long> getFCostsIdsWithNonMonthlyRegExp(Long userId) {
+        return getFixedExp(userId)
                 .stream()
                 .filter(fCost -> fCost.getFrequency() != Interval.MONTHLY)
                 .map(Cost::getId)
                 .toList();
     }
     
-    public List<String> getAllCategories() {
+    public List<String> getAllCategories(AppUser user) {
         return categoryRepository.findAll().stream()
+                .filter(c -> c.getUser().getId().equals(user.getId()))
                 .map(Category::getCategoryName)
                 .sorted(String::compareTo)
                 .toList();
     }
     
-    public void addCategory(String name) {
-        Category newCategory = new Category(name);
+    public void addCategory(String name, AppUser user) {
+        Category newCategory = new Category(name, user);
         categoryRepository.save(newCategory);
     }
 
-    public Category getOrCreate(String name) {
-        return categoryRepository.findByCategoryName("DEFAULT")
-                .orElseGet(() -> categoryRepository.save(new Category(name)));
+    private Cost createCostFromCostDTO(CostDTO costDTO, AppUser user) {
+        System.out.println("ISINCOME old: " + costDTO.isIncome());
+        Cost cost = new Cost();
+        cost.setDescr(costDTO.getDescr());
+        cost.setAmount(costDTO.getAmount());
+        cost.setIncome(costDTO.isIncome());
+        cost.setUser(user);
+        cost.setCategory(categoryRepository.findByUserAndCategoryName(user, costDTO.getCategory()).orElseThrow());
+
+        costRepository.save(cost);
+
+        System.out.println("ISINCOME:" + cost.isIncome());
+        return cost;
+    }
+
+    @Transactional
+    public void addCost(Cost cost, int year, int month) {
+        if(cost.getIsIncome()) {
+            addMonthsIncome(year, month, cost);
+        } else {
+            addMonthsExp(year, month, cost);
+        }
+    }
+
+    @Transactional
+    public void addCost(CostDTO costDTO, AppUser user, int year, int month) {
+        addCost(createCostFromCostDTO(costDTO, user), year, month);
+    }
+
+    @Transactional
+    public void addFixedCost(@Valid FixedCostForm fixedCost, AppUser user) {
+        if(fixedCost.getIsIncome()) {
+            addToFixedIncome(fixedCost, user);
+        } else {
+            addToFixedExp(fixedCost, user);
+        }
     }
 }

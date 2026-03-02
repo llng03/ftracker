@@ -1,5 +1,6 @@
 package de.ftracker.domain.model.potsDTOs;
 
+import de.ftracker.domain.model.AppUser;
 import de.ftracker.domain.model.costDTOs.FixedCost;
 import de.ftracker.domain.model.costDTOs.Interval;
 import jakarta.persistence.DiscriminatorValue;
@@ -32,8 +33,8 @@ public class PotForRegularExp extends BudgetPot{
 
     public PotForRegularExp() {}
 
-    public PotForRegularExp(String name, YearMonth lastSaved, YearMonth lastPayed, BigDecimal regularAmount, Long costId, Interval frequency) {
-        super(name);
+    public PotForRegularExp(String name, AppUser user, YearMonth lastSaved, YearMonth lastPayed, BigDecimal regularAmount, Long costId, Interval frequency) {
+        super(name, user);
         this.lastSavedMonth = lastSaved.getMonthValue();
         this.lastSavedYear = lastSaved.getYear();
         this.lastPayedMonth = lastPayed.getMonthValue();
