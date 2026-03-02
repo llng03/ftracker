@@ -1,8 +1,10 @@
 package de.ftracker.services;
 
+import de.ftracker.domain.model.AppUser;
 import de.ftracker.domain.model.costDTOs.FixedCost;
 import de.ftracker.domain.services.CostAggregationService;
 import de.ftracker.services.DTOs.FixedCostOverviewDTO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,20 +13,16 @@ import java.time.YearMonth;
 
 
 @Service
+@RequiredArgsConstructor
 public class FixedCostOverviewDTOService {
     private final CostManager costManager;
+    private final CostAggregationService costAggregationService;
 
-    @Autowired
-    public FixedCostOverviewDTOService(CostManager costManager) {
-        this.costManager = costManager;
-    }
-
-    public FixedCostOverviewDTO getFixedCostOverviewDTO(int currYear, int currMonth) {
+    public FixedCostOverviewDTO getFixedCostOverviewDTO(AppUser user, int currYear, int currMonth) {
         YearMonth currYM = YearMonth.of(currYear, currMonth);
-        List<FixedCost> allFixedIncome = costManager.getFixedIncome();
-        List<FixedCost> allFixedExp = costManager.getFixedExp();
+        List<FixedCost> allFixedIncome = costManager.getFixedIncome(user.getId());
+        List<FixedCost> allFixedExp = costManager.getFixedExp(user.getId());
 
-        CostAggregationService costAggregationService = new CostAggregationService();
         FixedCostOverviewDTO dto = new FixedCostOverviewDTO();
         dto.setCurrentFixedIncome(costAggregationService.getPresentFixedCosts(allFixedIncome, currYM));
         dto.setCurrentFixedExpense(costAggregationService.getPresentFixedCosts(allFixedExp, currYM));

@@ -13,13 +13,13 @@ public class StatisticsOverviewDTOService {
         this.statisticsService = statisticsService;
     }
 
-    public StatisticsOverviewDTO getStatisticsOverviewDTO(int year, int month) {
+    public StatisticsOverviewDTO getStatisticsOverviewDTO(int year, int month, Long userId) {
         StatisticsOverviewDTO statisticsOverviewDTO = new StatisticsOverviewDTO();
         statisticsOverviewDTO.setCostSumPerCategory(
-                statisticsService.getCostSumPerCategory(year, month)
+                statisticsService.getCostSumPerCategory(year, month, userId)
         );
-        statisticsOverviewDTO.setExpenseSum(statisticsService.getExpenseSumWOFixedCost(year, month));
-        statisticsOverviewDTO.setDifferenceSum(statisticsService.differenceToLastMonth(year, month));
+        statisticsOverviewDTO.setExpenseSum(statisticsService.getExpenseSumWOFixedCost(year, month, userId));
+        statisticsOverviewDTO.setDifferenceSum(statisticsService.differenceToLastMonth(year, month, userId));
 
         return statisticsOverviewDTO;
     }

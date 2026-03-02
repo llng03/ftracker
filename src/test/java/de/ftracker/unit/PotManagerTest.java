@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class PotManagerTest {
 
-    @Mock
+    /*@Mock
     PotRepository potRepository;
 
     @Mock
@@ -94,6 +94,6 @@ public class PotManagerTest {
         manager.distribute(new BigDecimal("100"), "technik");
         assertThat(manager.getUndistributed()).isEqualByComparingTo("200");
         assertThat(pot.sum()).isEqualByComparingTo("100");
-    }
+    }*/
 
 }

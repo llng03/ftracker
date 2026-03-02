@@ -1,5 +1,6 @@
 package de.ftracker.services;
 
+import de.ftracker.domain.model.AppUser;
 import de.ftracker.services.DTOs.PotOverviewDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,14 +18,14 @@ public class PotOverviewDTOService {
         this.potManager = potManager;
     }
 
-    public PotOverviewDTO getPotOverviewDTO() {
-        List<Long> ids = costManager.getFCostsIdsWithNonMonthlyRegExp();
-        potManager.updatePotsForReqularExp(ids);
+    public PotOverviewDTO getPotOverviewDTO(AppUser user) {
+        List<Long> ids = costManager.getFCostsIdsWithNonMonthlyRegExp(user.getId());
+        potManager.updatePotsForReqularExp(ids, user);
         PotOverviewDTO dto = new PotOverviewDTO();
 
-        dto.setPots(potManager.getPots());
-        dto.setUndistributed(potManager.getUndistributed());
-        dto.setSumTotal(potManager.getTotal());
+        dto.setPots(potManager.getPots(user));
+        dto.setUndistributed(potManager.getUndistributed(user));
+        dto.setSumTotal(potManager.getTotal(user));
 
         return dto;
     }

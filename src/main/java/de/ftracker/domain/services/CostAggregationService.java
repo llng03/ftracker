@@ -7,6 +7,8 @@ import de.ftracker.domain.model.costDTOs.Interval;
 import de.ftracker.utils.IntervalCount;
 import de.ftracker.utils.MonthNavigation;
 import de.ftracker.utils.MonthlySums;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -14,17 +16,21 @@ import java.time.YearMonth;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
+@RequiredArgsConstructor
 public class CostAggregationService {
+    private final CostService costService;
+
     public List<Cost> getApplicableFixedExp(List<FixedCost> fixedCosts, YearMonth month) {
          return getPresentFixedCosts(fixedCosts, month)
                  .stream()
                  .map( fCost -> {
                     if(fCost.getFrequency() != Interval.MONTHLY) {
-                        return new Cost(
-                                fCost.getId(),
+                        return costService.createTransient(
                                 fCost.getDescr(),
                                 getMonthlyAmount(fCost),
-                                fCost.getIsIncome()
+                                fCost.getIsIncome(),
+                                fCost.getUser()
                         );
                     } else {
                         return fCost;
@@ -88,7 +94,7 @@ public class CostAggregationService {
         return getPresentFixedCosts(fixedIncome, yearMonth)
                 .stream()
                 .filter(fCost -> isApplicable(fCost, yearMonth))
-                .map(fCost -> new Cost(fCost.getId(), fCost.getDescr(), fCost.getAmount(), fCost.getIsIncome()))
+                .map(fCost -> costService.createTransient(fCost.getDescr(), fCost.getAmount(), fCost.getIsIncome(), fCost.getUser()))
                 .toList();
     }
 

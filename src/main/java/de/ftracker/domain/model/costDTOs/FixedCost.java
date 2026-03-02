@@ -1,5 +1,7 @@
 package de.ftracker.domain.model.costDTOs;
 
+import de.ftracker.domain.model.AppUser;
+import de.ftracker.domain.services.CategoryPort;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,16 +31,10 @@ public class FixedCost extends Cost{
 
 
     public FixedCost() {
-        super("", BigDecimal.ZERO, true);
-        this.frequency = Interval.MONTHLY; // oder null
-        this.startMonth = YearMonth.now().getMonthValue();
-        this.startYear = YearMonth.now().getYear();
-        this.endMonth = null;
-        this.endYear = null;
     }
 
-    public FixedCost(Long id, String name, BigDecimal amount, boolean isIncome, Interval frequency, YearMonth start, YearMonth end) {
-        super(id, name, amount, isIncome);
+    public FixedCost(Long id, String name, BigDecimal amount, boolean isIncome, Category category, AppUser user, Interval frequency, YearMonth start, YearMonth end) {
+        super(id, name, amount, isIncome, category, user);
         this.frequency = frequency;
         this.startMonth = start.getMonthValue();
         this.startYear = start.getYear();
@@ -51,8 +47,8 @@ public class FixedCost extends Cost{
         }
     }
 
-    public FixedCost(String name, BigDecimal amount, boolean isIncome, Interval frequency, YearMonth start, YearMonth end) {
-        super(name, amount, isIncome);
+    public FixedCost(String name, BigDecimal amount, boolean isIncome, Category category, AppUser user, Interval frequency, YearMonth start, YearMonth end) {
+        super(name, amount, isIncome, user, category);
         this.frequency = frequency;
         this.startMonth = start.getMonthValue();
         this.startYear = start.getYear();
@@ -101,4 +97,6 @@ public class FixedCost extends Cost{
     public void setIsIncome(boolean isIncome) {
         super.setIncome(isIncome);
     }
+
+
 }

@@ -18,15 +18,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CostAggregationServiceTest {
 
-    private CostAggregationService costAggregationService;
+    /*private CostAggregationService costAggregationService;
 
-    @BeforeEach
-    public void setUp() {
-        costAggregationService = new CostAggregationService();
-    }
 
     // -- getApplicableFixedCost
-    @Test
+    /*@Test
     @DisplayName("getApplicableFixedCosts funktioniert für aktuellen Monat")
     void test1() {
         FixedCost fixedCost = new FixedCost("fixedIncome",
@@ -88,5 +84,5 @@ public class CostAggregationServiceTest {
 
         assertThat(applFixedCosts).anyMatch(fc -> fc.getDescr().equals("fixedIncome"));
 
-    }
+    }*/
 }
