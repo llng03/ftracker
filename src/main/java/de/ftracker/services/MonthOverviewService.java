@@ -1,8 +1,7 @@
 package de.ftracker.services;
 
 import de.ftracker.domain.model.AppUser;
-import de.ftracker.services.DTOs.MonthOverviewDTO;
-import de.ftracker.utils.MonthNavigation;
+import de.ftracker.services.dtos.MonthOverviewDTO;
 import de.ftracker.utils.MonthlySums;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

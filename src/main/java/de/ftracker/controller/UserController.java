@@ -1,17 +1,14 @@
 package de.ftracker.controller;
 
 import de.ftracker.domain.model.AppUser;
-import de.ftracker.services.UserRepository;
+import de.ftracker.services.repositories.UserRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api")

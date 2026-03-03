@@ -1,14 +1,15 @@
-package de.ftracker.services.DTOs;
+package de.ftracker.services.dtos;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
-public class DeleteEntryRequest {
-    @NotNull
+public class TakeMoneyFromPotRequest {
     private Long potId;
     @NotNull
-    private Long entryId;
+    private BigDecimal amount;
 }

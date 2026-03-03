@@ -1,6 +1,6 @@
 package de.ftracker.services;
 
-import de.ftracker.domain.model.costDTOs.Cost;
+import de.ftracker.domain.model.cost.Cost;
 import de.ftracker.utils.MonthNavigation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

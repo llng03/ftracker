@@ -1,14 +1,13 @@
 package de.ftracker.controller;
 
 import de.ftracker.domain.model.AppUser;
-import de.ftracker.domain.model.potsDTOs.BudgetPot;
-import de.ftracker.services.CostManager;
-import de.ftracker.services.DTOs.DistributeRequest;
-import de.ftracker.services.DTOs.PotOverviewDTO;
-import de.ftracker.services.DTOs.TakeMoneyFromPotRequest;
+import de.ftracker.domain.model.pots.BudgetPot;
+import de.ftracker.services.dtos.DistributeRequest;
+import de.ftracker.services.dtos.PotOverviewDTO;
+import de.ftracker.services.dtos.TakeMoneyFromPotRequest;
 import de.ftracker.services.PotManager;
 import de.ftracker.services.PotOverviewDTOService;
-import de.ftracker.services.UserRepository;
+import de.ftracker.services.repositories.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

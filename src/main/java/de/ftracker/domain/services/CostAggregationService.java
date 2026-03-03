@@ -1,9 +1,9 @@
 package de.ftracker.domain.services;
 
-import de.ftracker.domain.model.costDTOs.Cost;
-import de.ftracker.domain.model.costDTOs.FixedCost;
-import de.ftracker.domain.model.costDTOs.FixedCostForm;
-import de.ftracker.domain.model.costDTOs.Interval;
+import de.ftracker.domain.model.cost.Cost;
+import de.ftracker.domain.model.cost.FixedCost;
+import de.ftracker.domain.model.cost.FixedCostForm;
+import de.ftracker.domain.model.cost.Interval;
 import de.ftracker.utils.IntervalCount;
 import de.ftracker.utils.MonthNavigation;
 import de.ftracker.utils.MonthlySums;

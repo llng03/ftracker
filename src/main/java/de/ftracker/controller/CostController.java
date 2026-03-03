@@ -1,13 +1,12 @@
 package de.ftracker.controller;
 
 import de.ftracker.domain.model.AppUser;
-import de.ftracker.domain.model.costDTOs.Cost;
-import de.ftracker.domain.model.costDTOs.FixedCostForm;
+import de.ftracker.domain.model.cost.FixedCostForm;
 import de.ftracker.services.*;
-import de.ftracker.services.DTOs.*;
+import de.ftracker.services.dtos.*;
+import de.ftracker.services.repositories.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

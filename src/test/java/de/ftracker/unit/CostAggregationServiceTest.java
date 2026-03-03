@@ -1,8 +1,8 @@
 package de.ftracker.unit;
 
-import de.ftracker.domain.model.costDTOs.Cost;
-import de.ftracker.domain.model.costDTOs.FixedCost;
-import de.ftracker.domain.model.costDTOs.Interval;
+import de.ftracker.domain.model.cost.Cost;
+import de.ftracker.domain.model.cost.FixedCost;
+import de.ftracker.domain.model.cost.Interval;
 import de.ftracker.domain.services.CostAggregationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

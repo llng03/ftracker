@@ -1,7 +1,7 @@
-package de.ftracker.services;
+package de.ftracker.services.repositories;
 
 import de.ftracker.domain.model.AppUser;
-import de.ftracker.domain.model.costDTOs.Category;
+import de.ftracker.domain.model.cost.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,13 +1,11 @@
-package de.ftracker.services;
+package de.ftracker.services.repositories;
 
 import de.ftracker.domain.model.CostTables;
-import de.ftracker.domain.model.costDTOs.Cost;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.YearMonth;
 import java.util.Optional;
 
 //funktioniert das ganze jetzt wirklich schon? hab ich JPA verstanden?

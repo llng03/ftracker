@@ -1,7 +1,7 @@
 package de.ftracker.utils;
 
-import de.ftracker.domain.model.costDTOs.Cost;
-import de.ftracker.domain.model.costDTOs.FixedCost;
+import de.ftracker.domain.model.cost.Cost;
+import de.ftracker.domain.model.cost.FixedCost;
 
 import java.util.List;
 

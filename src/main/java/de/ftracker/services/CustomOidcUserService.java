@@ -1,9 +1,11 @@
 package de.ftracker.services;
 
 import de.ftracker.domain.model.AppUser;
-import de.ftracker.domain.model.costDTOs.Category;
-import de.ftracker.domain.model.potsDTOs.UndistributedPotAmount;
-import de.ftracker.services.UserRepository;
+import de.ftracker.domain.model.cost.Category;
+import de.ftracker.domain.model.pots.UndistributedPotAmount;
+import de.ftracker.services.repositories.CategoryRepository;
+import de.ftracker.services.repositories.PotSummaryRepository;
+import de.ftracker.services.repositories.UserRepository;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;

@@ -1,7 +1,7 @@
 package de.ftracker.services;
 
 import de.ftracker.domain.model.AppUser;
-import de.ftracker.services.DTOs.PotOverviewDTO;
+import de.ftracker.services.dtos.PotOverviewDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

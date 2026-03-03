@@ -1,12 +1,10 @@
 package de.ftracker.domain.services;
 
 import de.ftracker.domain.model.AppUser;
-import de.ftracker.domain.model.costDTOs.Category;
-import de.ftracker.domain.model.costDTOs.Cost;
-import de.ftracker.domain.model.costDTOs.FixedCost;
-import de.ftracker.domain.model.costDTOs.Interval;
-import de.ftracker.services.CategoryRepository;
-import de.ftracker.services.CostRepository;
+import de.ftracker.domain.model.cost.Category;
+import de.ftracker.domain.model.cost.FixedCost;
+import de.ftracker.domain.model.cost.Interval;
+import de.ftracker.services.repositories.CostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

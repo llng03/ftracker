@@ -1,6 +1,6 @@
 package de.ftracker.controller;
 
-import de.ftracker.services.DTOs.StatisticsOverviewDTO;
+import de.ftracker.services.dtos.StatisticsOverviewDTO;
 import de.ftracker.services.StatisticsOverviewDTOService;
 import de.ftracker.services.StatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
