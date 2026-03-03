@@ -1,8 +1,9 @@
-package de.ftracker.services;
+package de.ftracker.services.dtos.dtoServices;
 
 import de.ftracker.domain.model.AppUser;
 import de.ftracker.domain.model.cost.FixedCost;
 import de.ftracker.domain.services.CostAggregationService;
+import de.ftracker.services.CostManager;
 import de.ftracker.services.dtos.FixedCostOverviewDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

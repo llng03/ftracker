@@ -6,7 +6,7 @@ import de.ftracker.services.dtos.DistributeRequest;
 import de.ftracker.services.dtos.PotOverviewDTO;
 import de.ftracker.services.dtos.TakeMoneyFromPotRequest;
 import de.ftracker.services.PotManager;
-import de.ftracker.services.PotOverviewDTOService;
+import de.ftracker.services.dtos.dtoServices.PotOverviewDTOService;
 import de.ftracker.services.repositories.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

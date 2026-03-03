@@ -1,5 +1,6 @@
-package de.ftracker.services;
+package de.ftracker.services.dtos.dtoServices;
 
+import de.ftracker.services.StatisticsService;
 import de.ftracker.services.dtos.StatisticsOverviewDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

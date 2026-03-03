@@ -1,6 +1,8 @@
-package de.ftracker.services;
+package de.ftracker.services.dtos.dtoServices;
 
 import de.ftracker.domain.model.AppUser;
+import de.ftracker.services.CostManager;
+import de.ftracker.services.PotManager;
 import de.ftracker.services.dtos.MonthOverviewDTO;
 import de.ftracker.utils.MonthlySums;
 import org.springframework.beans.factory.annotation.Autowired;
