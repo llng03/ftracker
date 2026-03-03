@@ -1,4 +1,4 @@
-package de.ftracker.services;
+package de.ftracker.services.repositories;
 
 import de.ftracker.domain.model.CostTables;
 import de.ftracker.domain.model.costDTOs.Cost;

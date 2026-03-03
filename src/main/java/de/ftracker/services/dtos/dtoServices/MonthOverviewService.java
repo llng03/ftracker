@@ -1,4 +1,4 @@
-package de.ftracker.services;
+package de.ftracker.services.dtos.dtoServices;
 
 import de.ftracker.domain.model.AppUser;
 import de.ftracker.services.DTOs.MonthOverviewDTO;

@@ -1,4 +1,4 @@
-package de.ftracker.services;
+package de.ftracker.services.repositories;
 
 import de.ftracker.domain.model.costDTOs.FixedCost;
 import org.springframework.data.jpa.repository.JpaRepository;
