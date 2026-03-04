@@ -11,6 +11,6 @@ public interface UserRepository extends JpaRepository<AppUser, Long> {
     Optional<AppUser> findByProviderAndProviderUserId(String google, String providerId);
 
     @Modifying
-    @Query("DELETE FROM AppUser u WHERE u.isDemo = true AND u.expiresAt < CURRENT_TIMESTAMP")
+    @Query("DELETE FROM AppUser u WHERE u.demo = true AND u.expiresAt < CURRENT_TIMESTAMP")
     void deleteExpiredDemoUsers();
 }

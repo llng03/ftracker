@@ -18,6 +18,6 @@ public class AppUser {
     private String name;
     private String email;
     @Column(name="is_demo", nullable = false)
-    private boolean isDemo = false;
+    private boolean demo = false;
     private LocalDateTime expiresAt;
 }
