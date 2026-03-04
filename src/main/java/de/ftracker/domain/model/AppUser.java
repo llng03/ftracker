@@ -1,11 +1,10 @@
 package de.ftracker.domain.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -18,4 +17,7 @@ public class AppUser {
     private String providerUserId;
     private String name;
     private String email;
+    @Column(name="is_demo", nullable = false)
+    private boolean isDemo = false;
+    private LocalDateTime expires_at;
 }
