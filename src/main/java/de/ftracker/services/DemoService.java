@@ -2,26 +2,34 @@ package de.ftracker.services;
 
 import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
 import de.ftracker.domain.model.AppUser;
+import de.ftracker.services.dtos.AuthResponse;
 import de.ftracker.services.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class DemoService {
     public UserRepository userRepository;
+    public JwtService jwtService;
 
-    public AuthenticationResponse startDemo() {
+    public AuthResponse startDemo() {
         userRepository.deleteExpiredDemoUsers();
-        createNewDemoUser();
+        AppUser demo = createNewDemoUser();
         generateDemoData();
-        return getAuthenticationResponse();
+
+        Instant exp = Instant.now().plus(24, ChronoUnit.HOURS);
+        String token = jwtService.generateToken(demo.getId(), exp, true);
+
+        return new AuthResponse(token);
     }
 
-    public void createNewDemoUser() {
+    public AppUser createNewDemoUser() {
         AppUser demoUser = new AppUser();
         demoUser.setName("Demo User");
         String uuid = UUID.randomUUID().toString();
@@ -34,7 +42,7 @@ public class DemoService {
         int hoursOfADay = 24;
         demoUser.setExpiresAt(LocalDateTime.now().plusHours(hoursOfADay));
 
-        userRepository.save(demoUser);
+        return userRepository.save(demoUser);
 
     }
 
