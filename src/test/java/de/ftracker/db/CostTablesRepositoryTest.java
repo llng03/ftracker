@@ -2,7 +2,7 @@
 
 import de.ftracker.model.CostTables;
 import de.ftracker.model.costDTOs.Cost;
-import de.ftracker.services.CostTablesRepository;
+import de.ftracker.services.repositories.CostTablesRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

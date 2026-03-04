@@ -20,7 +20,7 @@ public class Category {
     @ManyToOne(optional=false)
     private AppUser user;
 
-    protected Category() {}
+    public Category() {}
 
     public Category(String name, AppUser user) {
         this.categoryName = name;
