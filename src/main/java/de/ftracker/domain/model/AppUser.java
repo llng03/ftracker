@@ -19,5 +19,5 @@ public class AppUser {
     private String email;
     @Column(name="is_demo", nullable = false)
     private boolean isDemo = false;
-    private LocalDateTime expires_at;
+    private LocalDateTime expiresAt;
 }
