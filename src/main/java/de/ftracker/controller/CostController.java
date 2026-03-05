@@ -154,10 +154,4 @@ public class CostController {
         return ResponseEntity.ok().build();
     }
 
-    /*private AppUser getCurrentUser(OidcUser oidcUser) {
-        String providerUserId = oidcUser.getSubject();
-        return userRepository.findByProviderAndProviderUserId("google", providerUserId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
-    }*/
-
 }
