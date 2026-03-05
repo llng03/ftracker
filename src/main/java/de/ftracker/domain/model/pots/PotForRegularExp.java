@@ -1,8 +1,7 @@
-package de.ftracker.domain.model.potsDTOs;
+package de.ftracker.domain.model.pots;
 
 import de.ftracker.domain.model.AppUser;
-import de.ftracker.domain.model.costDTOs.FixedCost;
-import de.ftracker.domain.model.costDTOs.Interval;
+import de.ftracker.domain.model.cost.Interval;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

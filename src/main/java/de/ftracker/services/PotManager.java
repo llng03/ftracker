@@ -1,11 +1,13 @@
 package de.ftracker.services;
 
 import de.ftracker.domain.model.AppUser;
-import de.ftracker.domain.model.costDTOs.Cost;
-import de.ftracker.domain.model.potsDTOs.BudgetPot;
-import de.ftracker.domain.model.potsDTOs.PotEntry;
-import de.ftracker.domain.model.potsDTOs.PotForRegularExp;
-import de.ftracker.domain.model.potsDTOs.UndistributedPotAmount;
+import de.ftracker.domain.model.cost.Cost;
+import de.ftracker.domain.model.pots.BudgetPot;
+import de.ftracker.domain.model.pots.PotEntry;
+import de.ftracker.domain.model.pots.PotForRegularExp;
+import de.ftracker.domain.model.pots.UndistributedPotAmount;
+import de.ftracker.services.repositories.PotRepository;
+import de.ftracker.services.repositories.PotSummaryRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,6 @@ import java.time.YearMonth;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 

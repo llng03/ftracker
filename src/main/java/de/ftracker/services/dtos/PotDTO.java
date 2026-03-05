@@ -1,4 +1,4 @@
-package de.ftracker.services.DTOs;
+package de.ftracker.services.dtos;
 
 public class PotDTO {
 

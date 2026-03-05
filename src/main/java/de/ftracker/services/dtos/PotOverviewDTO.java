@@ -1,6 +1,6 @@
-package de.ftracker.services.DTOs;
+package de.ftracker.services.dtos;
 
-import de.ftracker.domain.model.potsDTOs.BudgetPot;
+import de.ftracker.domain.model.pots.BudgetPot;
 import lombok.Getter;
 import lombok.Setter;
 

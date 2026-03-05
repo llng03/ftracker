@@ -1,6 +1,6 @@
 package de.ftracker.services.repositories;
 
-import de.ftracker.domain.model.costDTOs.FixedCost;
+import de.ftracker.domain.model.cost.FixedCost;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

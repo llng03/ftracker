@@ -1,9 +1,9 @@
-package de.ftracker.services.DTOs;
+package de.ftracker.services.dtos;
 
 import de.ftracker.domain.model.AppUser;
-import de.ftracker.domain.model.costDTOs.Category;
+import de.ftracker.domain.model.cost.Category;
 import de.ftracker.domain.services.CategoryPort;
-import de.ftracker.services.CategoryRepository;
+import de.ftracker.services.repositories.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

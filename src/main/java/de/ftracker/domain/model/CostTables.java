@@ -1,7 +1,7 @@
 package de.ftracker.domain.model;
 
-import de.ftracker.domain.model.costDTOs.Category;
-import de.ftracker.domain.model.costDTOs.Cost;
+import de.ftracker.domain.model.cost.Category;
+import de.ftracker.domain.model.cost.Cost;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

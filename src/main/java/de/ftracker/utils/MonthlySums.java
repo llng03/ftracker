@@ -1,7 +1,10 @@
 package de.ftracker.utils;
 
+import lombok.Getter;
+
 import java.math.BigDecimal;
 
+@Getter
 public class MonthlySums {
     public final BigDecimal sumIn;
     public final BigDecimal sumOut;

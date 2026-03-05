@@ -1,4 +1,4 @@
-package de.ftracker.domain.model.costDTOs;
+package de.ftracker.domain.model.cost;
 
 import de.ftracker.domain.model.AppUser;
 import jakarta.persistence.*;
@@ -20,7 +20,7 @@ public class Category {
     @ManyToOne(optional=false)
     private AppUser user;
 
-    protected Category() {}
+    public Category() {}
 
     public Category(String name, AppUser user) {
         this.categoryName = name;

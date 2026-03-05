@@ -1,6 +1,6 @@
-package de.ftracker.services.DTOs;
+package de.ftracker.services.dtos;
 
-import de.ftracker.domain.model.costDTOs.FixedCost;
+import de.ftracker.domain.model.cost.FixedCost;
 import lombok.Getter;
 import lombok.Setter;
 

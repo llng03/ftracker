@@ -1,4 +1,4 @@
-package de.ftracker.domain.model.costDTOs;
+package de.ftracker.domain.model.cost;
 
 import de.ftracker.domain.model.AppUser;
 import de.ftracker.domain.services.CategoryPort;
@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.Optional;
 
-import static de.ftracker.domain.model.costDTOs.Interval.MONTHLY;
+import static de.ftracker.domain.model.cost.Interval.MONTHLY;
 
 @Getter
 @Setter

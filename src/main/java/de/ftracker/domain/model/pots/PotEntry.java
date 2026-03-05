@@ -1,6 +1,6 @@
-package de.ftracker.domain.model.potsDTOs;
+package de.ftracker.domain.model.pots;
 
-import de.ftracker.domain.model.costDTOs.Cost;
+import de.ftracker.domain.model.cost.Cost;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -8,7 +8,6 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.YearMonth;
 
 @Getter
 @Setter

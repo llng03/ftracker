@@ -1,12 +1,10 @@
-package de.ftracker.domain.model.potsDTOs;
+package de.ftracker.domain.model.pots;
 
 import de.ftracker.domain.model.AppUser;
-import de.ftracker.domain.model.costDTOs.Cost;
+import de.ftracker.domain.model.cost.Cost;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.validator.constraints.UniqueElements;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

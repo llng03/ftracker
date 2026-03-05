@@ -1,4 +1,4 @@
-package de.ftracker.services.DTOs;
+package de.ftracker.services.dtos;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
