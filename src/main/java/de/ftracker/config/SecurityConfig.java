@@ -65,7 +65,7 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
                 )
                 .oauth2Login(oauth -> oauth
-                        .defaultSuccessUrl("http://localhost:5173/", true)
+                        .defaultSuccessUrl("${app.frontend.url}", true)
                         .userInfoEndpoint(u -> u.oidcUserService(serviceForUsers))
                 );
 
@@ -74,7 +74,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedOrigins(List.of("${app.frontend.url}"));
         config.setAllowedMethods(List.of("GET","POST","PUT", "PATCH", "DELETE","OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
