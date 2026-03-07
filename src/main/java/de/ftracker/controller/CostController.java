@@ -22,7 +22,7 @@ import java.time.YearMonth;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/costs")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "${app.frontend.url}")
 public class CostController {
     private final CostManager costManager;
     private final PotManager potManager;

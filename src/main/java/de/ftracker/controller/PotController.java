@@ -26,7 +26,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/pots")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "${app.frontend.url}")
 public class PotController {
     private final PotOverviewDTOService potOverviewDTOService;
     private final PotManager potManager;

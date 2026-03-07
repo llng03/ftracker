@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/statistics")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "${app.frontend.url}")
 public class StatisticsController {
     private final StatisticsService statisticsService;
     private final CurrentUserService currentUserService;
