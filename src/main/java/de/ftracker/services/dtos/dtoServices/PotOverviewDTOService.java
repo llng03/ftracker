@@ -21,7 +21,7 @@ public class PotOverviewDTOService {
     }
 
     public PotOverviewDTO getPotOverviewDTO(AppUser user) {
-        List<Long> ids = costManager.getFCostsIdsWithNonMonthlyRegExp(user.getId());
+        List<Long> ids = costManager.getFCostsIdsWithNonMonthlyRegExp(user);
         potManager.updatePotsForReqularExp(ids, user);
         PotOverviewDTO dto = new PotOverviewDTO();
 

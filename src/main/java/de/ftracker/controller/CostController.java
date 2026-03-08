@@ -37,7 +37,9 @@ public class CostController {
             Authentication authentication,
             @RequestParam int year, @RequestParam int month
     ) {
+        System.out.println("requireUser");
         AppUser user = currentUserService.requireUser(authentication);
+        System.out.println("geMonthOverviewDTO");
         return monthOverviewService.getMonthOverviewDTO(year, month, user);
 
     }

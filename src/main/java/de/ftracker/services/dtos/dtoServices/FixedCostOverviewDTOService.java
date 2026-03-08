@@ -20,8 +20,8 @@ public class FixedCostOverviewDTOService {
 
     public FixedCostOverviewDTO getFixedCostOverviewDTO(AppUser user, int currYear, int currMonth) {
         YearMonth currYM = YearMonth.of(currYear, currMonth);
-        List<FixedCost> allFixedIncome = costManager.getFixedIncome(user.getId());
-        List<FixedCost> allFixedExp = costManager.getFixedExp(user.getId());
+        List<FixedCost> allFixedIncome = costManager.getFixedIncome(user);
+        List<FixedCost> allFixedExp = costManager.getFixedExp(user);
 
         FixedCostOverviewDTO dto = new FixedCostOverviewDTO();
         dto.setCurrentFixedIncome(costAggregationService.getPresentFixedCosts(allFixedIncome, currYM));

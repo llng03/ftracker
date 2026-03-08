@@ -6,6 +6,7 @@ import de.ftracker.domain.model.cost.Cost;
 import de.ftracker.services.repositories.CostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 

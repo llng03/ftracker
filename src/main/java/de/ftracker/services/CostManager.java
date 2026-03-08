@@ -59,86 +59,120 @@ public class CostManager {
                 });
     }
 
+    public List<FixedCost> getFixedCosts(AppUser user) {
+        return fixedCostsRepository.findByUser(user);
+    }
+
+    public List<Cost> getMonthsIncome(CostTables monthsTables, Long userId) {
+        return monthsTables.getIncomes(userId);
+    }
+
     public List<Cost> getMonthsIncome(YearMonth yearMonth, Long userId) {
-        return getTablesOf(yearMonth).getIncomes(userId);
+        return getMonthsIncome(getTablesOf(yearMonth), userId);
     }
 
     public List<Cost> getMonthsIncome(int year, int month, Long userId) {
         return getMonthsIncome(YearMonth.of(year, month), userId);
     }
 
+    public List<Cost> getMonthsExp(CostTables monthsTables, Long userId) {
+        return monthsTables.getExpenses(userId);
+    }
+
     public List<Cost> getMonthsExp(YearMonth yearMonth, Long userId) {
-        return getTablesOf(yearMonth).getExpenses(userId);
+        return getMonthsExp(getTablesOf(yearMonth), userId);
     }
 
     public List<Cost> getMonthsExp(int year, int month, Long userId) {
         return getMonthsExp(YearMonth.of(year, month), userId);
     }
 
+    public List<FixedCost> getFixedIncome(AppUser user) {
+        return getFixedIncome(getFixedCosts(user));
+    }
 
-    public List<FixedCost> getFixedIncome(Long userId) {
-        return fixedCostsRepository.findAll().stream()
-                .filter(c -> c.getUser().getId().equals(userId))
+    public List<FixedCost> getFixedIncome(List<FixedCost> fixedCosts) {
+        return fixedCosts.stream()
                 .filter(Cost::getIsIncome)
                 .collect(Collectors.toList());
     }
 
-    public List<FixedCost> getFixedExp(Long userId) {
-        return fixedCostsRepository.findAll().stream()
-                .filter(c -> c.getUser().getId().equals(userId))
+    public List<FixedCost> getFixedExp(AppUser user) {
+        return getFixedExp(getFixedCosts(user));
+    }
+
+    public List<FixedCost> getFixedExp(List<FixedCost> fixedCosts) {
+        return fixedCosts.stream()
                 .filter(c -> !c.getIsIncome())
                 .collect(Collectors.toList());
     }
 
-    public List<Cost> getMonthsFixedIncome(Long userId, YearMonth yearMonth) {
-        return costAggregationService.getApplicableFixedIncome(getFixedIncome(userId), yearMonth);
+    public List<Cost> getMonthsFixedIncome(List<FixedCost> fixedIncome, YearMonth yearMonth) {
+        return costAggregationService.getApplicableFixedIncome(fixedIncome, yearMonth);
     }
 
-    public List<Cost> getMonthsFixedIncome(Long userId, int year, int month) {
-        return getMonthsFixedIncome(userId, YearMonth.of(year, month));
+    public List<Cost> getMonthsFixedIncome(AppUser user, YearMonth yearMonth) {
+        return getMonthsFixedIncome(getFixedCosts(user), yearMonth);
     }
 
-    public List<Cost> getMonthsFixedExp(Long userId, YearMonth yearMonth) {
-        return costAggregationService.getApplicableFixedExp(getFixedExp(userId), yearMonth);
+    public List<Cost> getMonthsFixedIncome(AppUser user, int year, int month) {
+        return getMonthsFixedIncome(user, YearMonth.of(year, month));
     }
 
-    public List<Cost> getMonthsFixedExp(Long userId, int year, int month) {
-        return getMonthsFixedExp(userId, YearMonth.of(year, month));
+    public List<Cost> getMonthsFixedExp(List<FixedCost> fixedExp, YearMonth yearMonth) {
+        return costAggregationService.getApplicableFixedExp(fixedExp, yearMonth);
+    }
+
+    public List<Cost> getMonthsFixedExp(AppUser user, YearMonth yearMonth) {
+        return getMonthsFixedExp(getFixedCosts(user), yearMonth);
+    }
+
+    public List<Cost> getMonthsFixedExp(AppUser user, int year, int month) {
+        return getMonthsFixedExp(user, YearMonth.of(year, month));
+    }
+
+    public List<Cost> getAllMonthsIncome(List<FixedCost> fixedIncome, List<Cost> monthsIncome, YearMonth month) {
+        List<Cost> allMonthsIncome = new ArrayList<>();
+        allMonthsIncome.addAll(monthsIncome);
+        allMonthsIncome.addAll(costAggregationService.getApplicableFixedIncome(fixedIncome, month));
+        return allMonthsIncome;
+    }
+
+    public List<Cost> getAllMonthsIncome(YearMonth month, AppUser user) {
+        return getAllMonthsIncome(getFixedIncome(user), getMonthsIncome(month, user.getId()), month);
+    }
+
+    public List<Cost> getAllMonthsIncome(int year, int month, AppUser user) {
+        return getAllMonthsIncome(YearMonth.of(year, month), user);
+    }
+
+    public List<Cost> getAllMonthsExp(List<FixedCost> fixedExp, List<Cost> monthsExp, YearMonth month) {
+        List<Cost> allMonthsExp = new ArrayList<>();
+        allMonthsExp.addAll(monthsExp);
+        allMonthsExp.addAll(costAggregationService.getApplicableFixedExp(fixedExp, month));
+        return allMonthsExp;
+    }
+
+    public List<Cost> getAllMonthsExp(YearMonth month, AppUser user) {
+        return getAllMonthsExp(getFixedExp(user), getMonthsExp(month, user.getId()), month);
+    }
+
+    public List<Cost> getAllMonthsExp(int year, int month, AppUser user) {
+        return getAllMonthsExp(YearMonth.of(year, month), user);
     }
 
 
-    public List<Cost> getAllMonthsIncome(YearMonth month, Long userId) {
-        List<Cost> income = getMonthsIncome(month, userId);
-        income.addAll(costAggregationService.getApplicableFixedExp(getFixedIncome(userId), month));
-        return income;
+    public MonthlySums calculatethisMonthsSums(List<Cost> allMonthsIncome, List<Cost> allMonthsExp) {
+        return costAggregationService.calculateMonthlySums(allMonthsIncome, allMonthsExp);
+    }
+    public MonthlySums calculateThisMonthsSums(YearMonth month, AppUser user) {
+        return calculatethisMonthsSums(getAllMonthsIncome(month, user), getAllMonthsExp(month, user));
     }
 
-    public List<Cost> getAllMonthsIncome(int year, int month, Long userId) {
-        return getAllMonthsIncome(YearMonth.of(year, month), userId);
+    public MonthlySums calculateThisMonthsSums(int year, int month, AppUser user) {
+        return calculateThisMonthsSums(YearMonth.of(year, month), user);
     }
 
-    public List<Cost> getAllMonthsExp(YearMonth month, Long userId) {
-        List<Cost> exp = getMonthsExp(month, userId);
-        exp.addAll(costAggregationService.getApplicableFixedExp(getFixedExp(userId), month));
-        return exp;
-    }
-
-    public List<Cost> getAllMonthsExp(int year, int month, Long userId) {
-        return getAllMonthsExp(YearMonth.of(year, month), userId);
-    }
-
-
-    //DAS HIER IST EIGENTLICH NUR WEITERLEITUNG DER METHODEN
-    public MonthlySums calculateThisMonthsSums(YearMonth month, Long userId) {
-        return costAggregationService.calculateMonthlySums(
-                getAllMonthsIncome(month, userId),
-                getAllMonthsExp(month, userId)
-        );
-    }
-
-    public MonthlySums calculateThisMonthsSums(int year, int month, Long userId) {
-        return calculateThisMonthsSums(YearMonth.of(year, month), userId);
-    }
 
     public BigDecimal getMonthlyCost(FixedCostForm costForm) {
         return costAggregationService.getMonthlyAmount(costForm);
@@ -170,6 +204,7 @@ public class CostManager {
         fixedCost.setAmount(incomeForm.getAmount());
         fixedCost.setIsIncome(incomeForm.getIsIncome());
         fixedCost.setUser(user);
+        fixedCost.setCategory(categoryRepository.findByUserAndCategoryName(user, "default").orElseThrow());
         fixedCost.setFrequency(incomeForm.getFrequency());
         fixedCost.setStart(incomeForm.getStart());
         fixedCost.setEnd(incomeForm.getEnd());
@@ -189,6 +224,7 @@ public class CostManager {
         fixedCost.setIsIncome(false);
         fixedCost.setUser(user);
         fixedCost.setFrequency(expForm.getFrequency());
+        fixedCost.setCategory(categoryRepository.findByUserAndCategoryName(user, "default").orElseThrow());
         fixedCost.setStart(expForm.getStart());
         fixedCost.setEnd(expForm.getEnd());
         addToFixedExp(fixedCost, user);
@@ -420,8 +456,8 @@ public class CostManager {
         return updateOldFixedCostRequest;
     }
 
-    public List<Long> getFCostsIdsWithNonMonthlyRegExp(Long userId) {
-        return getFixedExp(userId)
+    public List<Long> getFCostsIdsWithNonMonthlyRegExp(AppUser user) {
+        return getFixedExp(user)
                 .stream()
                 .filter(fCost -> fCost.getFrequency() != Interval.MONTHLY)
                 .map(Cost::getId)
@@ -429,8 +465,7 @@ public class CostManager {
     }
     
     public List<String> getAllCategories(AppUser user) {
-        return categoryRepository.findAll().stream()
-                .filter(c -> c.getUser().getId().equals(user.getId()))
+        return categoryRepository.findCategoriesByUser(user).stream()
                 .map(Category::getCategoryName)
                 .sorted(String::compareTo)
                 .toList();

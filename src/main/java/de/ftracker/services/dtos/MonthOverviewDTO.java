@@ -23,12 +23,6 @@ public class MonthOverviewDTO {
     private List<Cost> monthsFixedIncome;
     private List<Cost> monthsFixedExpense;
 
-    private List<FixedCost> fixedIncome;
-    private List<FixedCost> fixedExpense;
-
-    private List<Cost> allMonthsIncome;
-    private List<Cost> allMonthsExpense;
-
     // - - sums - - //
     private BigDecimal sumIn;
     private BigDecimal sumOut;
