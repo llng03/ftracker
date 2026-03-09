@@ -61,7 +61,7 @@ public class MonthOverviewService {
         System.out.println("getAllMonthsIncome");
         List<Cost> allMonthsIncome = costManager.getAllMonthsIncome(fixedIncome, monthsIncome, currMonth);
         System.out.println("getAllMonthsExp");
-        List<Cost> allMonthsExp = costManager.getAllMonthsExp(fixedExp, monthsFixedExp, currMonth);
+        List<Cost> allMonthsExp = costManager.getAllMonthsExp(fixedExp, monthsExp, currMonth);
 
         System.out.println("calculateThisMonthsSums");
         MonthlySums monthlySums = costManager.calculatethisMonthsSums(allMonthsIncome, allMonthsExp);
