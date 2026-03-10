@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -36,7 +37,8 @@ public class DemoService {
 
     @Transactional
     public AuthResponse startDemo() {
-        userRepository.deleteExpiredDemoUsers();
+
+        deleteExpiredDemoUsers();
         AppUser demo = createNewDemoUser();
         generateDemoData(demo);
 
@@ -61,6 +63,15 @@ public class DemoService {
 
         return userRepository.save(demoUser);
 
+    }
+
+    public void deleteExpiredDemoUsers() {
+        List<AppUser> expiredUsers = userRepository.findExpiredDemoUsers();
+        for(AppUser user: expiredUsers) {
+            potSummaryRepository.deleteByUserId(user.getId());
+            categoryRepository.deleteByUser(user.getId());
+            userRepository.delete(user);
+        }
     }
 
     public void generateDemoData(AppUser user) {

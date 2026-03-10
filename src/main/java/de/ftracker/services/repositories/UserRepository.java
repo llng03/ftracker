@@ -6,13 +6,13 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<AppUser, Long> {
     Optional<AppUser> findByProviderAndProviderUserId(String google, String providerId);
 
-    @Modifying
-    @Query("DELETE FROM AppUser u WHERE u.demo = true AND u.expiresAt < CURRENT_TIMESTAMP")
-    void deleteExpiredDemoUsers();
+    @Query("SELECT u FROM AppUser u WHERE u.demo = true AND u.expiresAt < CURRENT_TIMESTAMP")
+    List<AppUser> findExpiredDemoUsers();
 }
