@@ -22,4 +22,9 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     @Transactional
     @Query("DELETE FROM Category c WHERE c.user.id=:userId")
     void deleteByUser(Long userId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Category c WHERE c.user.id=:userId AND c.categoryName=:categoryName")
+    void deleteByUserAndCategoryName(Long userId, String categoryName);
 }

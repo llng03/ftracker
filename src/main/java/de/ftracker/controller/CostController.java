@@ -69,7 +69,7 @@ public class CostController {
             @RequestBody CostDTO costDTO,
             @RequestParam int year,
             @RequestParam int month) {
-
+        System.out.println("addCost Controller aufgerufen");
         AppUser user = currentUserService.requireUser(authentication);
         costManager.addCost(costDTO, user, year, month);
 
@@ -153,6 +153,14 @@ public class CostController {
     @DeleteMapping("/deletePotEntry")
     public ResponseEntity<Void> deletePotEntry(@RequestBody DeleteEntryRequest deleteEntryRequest) {
         costManager.deletePotEntry(deleteEntryRequest, potManager);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/deleteCategory")
+    public ResponseEntity<Void> deleteCategory(Authentication authentication, @RequestParam String categoryName) {
+        System.out.println("deleteCategory Controller aufgerufen");
+        AppUser user = currentUserService.requireUser(authentication);
+        costManager.deleteCategory(categoryName, user);
         return ResponseEntity.ok().build();
     }
 
