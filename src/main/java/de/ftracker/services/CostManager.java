@@ -516,20 +516,22 @@ public class CostManager {
 
     @Transactional
     public void deleteCategory(String categoryName, AppUser user) {
-        Category deletedCategory = categoryRepository
-                .findByUserAndCategoryName(user, categoryName).orElseThrow(() ->
-                        new IllegalArgumentException("Did not find Category to delete."));
-        List<Cost> costsToModify = costRepository.findByUserAndCategory(user, deletedCategory);
-        costsToModify.forEach(cost -> System.out.println(cost.getDescr()));
-        Category defaultCategory = categoryRepository.findByUserAndCategoryName(user, "default")
-                .orElseThrow(() -> new IllegalArgumentException("Did not find default category."));
+        if(!categoryName.equals("default") && !categoryName.equals("-> pots")) {
+            Category deletedCategory = categoryRepository
+                    .findByUserAndCategoryName(user, categoryName).orElseThrow(() ->
+                            new IllegalArgumentException("Did not find Category to delete."));
+            List<Cost> costsToModify = costRepository.findByUserAndCategory(user, deletedCategory);
+            costsToModify.forEach(cost -> System.out.println(cost.getDescr()));
+            Category defaultCategory = categoryRepository.findByUserAndCategoryName(user, "default")
+                    .orElseThrow(() -> new IllegalArgumentException("Did not find default category."));
 
-        for(Cost cost: costsToModify) {
-            cost.setCategory(defaultCategory);
-            System.out.println("set " + cost.getDescr() + " to category " + defaultCategory.getCategoryName());
-            costRepository.saveAndFlush(cost);
+            for(Cost cost: costsToModify) {
+                cost.setCategory(defaultCategory);
+                System.out.println("set " + cost.getDescr() + " to category " + defaultCategory.getCategoryName());
+                costRepository.saveAndFlush(cost);
+            }
+
+            categoryRepository.deleteByUserAndCategoryName(user.getId(), categoryName);
         }
-
-        categoryRepository.deleteByUserAndCategoryName(user.getId(), categoryName);
     }
 }
