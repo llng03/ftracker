@@ -69,7 +69,6 @@ public class CostController {
             @RequestBody CostDTO costDTO,
             @RequestParam int year,
             @RequestParam int month) {
-        System.out.println("addCost Controller aufgerufen");
         AppUser user = currentUserService.requireUser(authentication);
         costManager.addCost(costDTO, user, year, month);
 
