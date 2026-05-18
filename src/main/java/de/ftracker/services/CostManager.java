@@ -305,6 +305,32 @@ public class CostManager {
 
     }
 
+    @Transactional
+    public void deleteCostByUser(AppUser user) {
+        List<Cost> usersCosts = costRepository.findByUser(user);
+
+        for(Cost c: usersCosts) {
+            deleteFromCostTables(c.getId());
+            potManager.deletePotEntryWithCostId(c, user);
+            costRepository.deleteById(c.getId());
+        }
+        costRepository.flush();
+    }
+
+    private void deleteFromCostTables(Long costId) {
+        List<CostTables> costTables = costTablesRepository.findAll();
+        for(CostTables t: costTables) {
+            t.getExpenses().removeIf(expense ->
+                    expense.getId().equals(costId)
+            );
+
+            t.getIncomes().removeIf(income ->
+                    income.getId().equals(costId)
+            );
+            costTablesRepository.saveAndFlush(t);
+        }
+    }
+
     // - - POTS - -
     @Transactional
     public void addToPots(CostTables thisTables, AppUser user, PotManager potManager, BigDecimal amount) {

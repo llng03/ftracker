@@ -5,9 +5,8 @@ import de.ftracker.domain.model.AppUser;
 import de.ftracker.domain.model.cost.Category;
 import de.ftracker.domain.model.pots.UndistributedPotAmount;
 import de.ftracker.services.dtos.AuthResponse;
-import de.ftracker.services.repositories.CategoryRepository;
-import de.ftracker.services.repositories.PotSummaryRepository;
-import de.ftracker.services.repositories.UserRepository;
+import de.ftracker.services.repositories.*;
+import io.jsonwebtoken.Jwt;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,17 +21,21 @@ import java.util.UUID;
 
 @Service
 public class DemoService {
-    public UserRepository userRepository;
-    public PotSummaryRepository potSummaryRepository;
-    public CategoryRepository categoryRepository;
-    public JwtService jwtService;
+    private final CostManager costManager;
+    private final UserRepository userRepository;
+    private final PotSummaryRepository potSummaryRepository;
+    private final CategoryRepository categoryRepository;
+    private final JwtService jwtService;
+    private final PotRepository potRepository;
 
     @Autowired
-    public DemoService(UserRepository userRepository, JwtService jwtService, PotSummaryRepository potSummaryRepository, CategoryRepository categoryRepository) {
+    public DemoService(UserRepository userRepository, JwtService jwtService, PotSummaryRepository potSummaryRepository, CategoryRepository categoryRepository, CostManager costManager, PotRepository potRepository) {
         this.userRepository = userRepository;
         this.potSummaryRepository = potSummaryRepository;
         this.categoryRepository = categoryRepository;
         this.jwtService = jwtService;
+        this.costManager = costManager;
+        this.potRepository = potRepository;
     }
 
     @Transactional
@@ -68,6 +71,8 @@ public class DemoService {
     public void deleteExpiredDemoUsers() {
         List<AppUser> expiredUsers = userRepository.findExpiredDemoUsers();
         for(AppUser user: expiredUsers) {
+            costManager.deleteCostByUser(user);
+            potRepository.deleteByUserId(user.getId());
             potSummaryRepository.deleteByUserId(user.getId());
             categoryRepository.deleteByUser(user.getId());
             userRepository.delete(user);
