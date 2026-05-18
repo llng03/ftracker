@@ -7,4 +7,4 @@ link zum Meta Repo: https://github.com/llng03/Finanztracker
 
 ## Setup
 docker compose up
-./mvnw spring-boot:run
+./gradlew bootRun
