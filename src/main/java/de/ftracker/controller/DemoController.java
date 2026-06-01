@@ -25,9 +25,4 @@ public class DemoController {
     public AuthResponse startDemo() {
         return demoService.startDemo();
     }
-
-    @GetMapping("/deploy-check")
-    public String deployCheck() {
-        return "deploy-check-2026-03-09-22-15";
-    }
 }
