@@ -78,8 +78,8 @@ public class DemoService {
     public void deleteExpiredDemoUsers() {
         List<AppUser> expiredUsers = userRepository.findExpiredDemoUsers();
         for(AppUser user: expiredUsers) {
-            categoryRepository.deleteByUser(user.getId());
             costManager.deleteCostByUser(user);
+            categoryRepository.deleteByUser(user.getId());
             potRepository.deleteByUserId(user.getId());
             potSummaryRepository.deleteByUserId(user.getId());
             userRepository.delete(user);
@@ -105,8 +105,6 @@ public class DemoService {
 
         Cost shopping = createExpense(groceries, user);
         costManager.addCost(shopping, YearMonth.now().getYear(), YearMonth.now().getMonthValue());
-
-
     }
 
     private Cost createExpense(Category groceryCategory, AppUser user) {
